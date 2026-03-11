@@ -1223,7 +1223,8 @@
           </div>
           <div class="name-input-wrap">
             <div class="input-label">Kelas</div>
-            <select class="select-input" id="kelasSelect">
+            <select class="select-input" id="kelasSelect" onchange="onNameInput()">
+              <option value="">— Pilih Kelas —</option>
               <option value="Kelas X">Kelas X</option>
               <option value="Kelas XI">Kelas XI</option>
               <option value="Kelas XII">Kelas XII</option>
@@ -1249,11 +1250,7 @@
       <!-- Leaderboard Panel -->
       <div class="lb-panel">
         <div class="lb-header">
-          <div class="lb-title">🏆 Papan Skor</div>
-          <div class="lb-mode-tabs">
-            <button class="lb-mode-tab active" id="lbTabGlobal" onclick="setLbMode('global')">🌐 Global</button>
-            <button class="lb-mode-tab" id="lbTabLokal" onclick="setLbMode('lokal')">📱 Lokal</button>
-          </div>
+          <div class="lb-title">🏆 Papan Skor Global</div>
         </div>
         <div class="lb-filter-row" id="lbFilterRow">
           <button class="lb-filter-btn active" onclick="setLbFilter('')">Semua</button>
@@ -2222,6 +2219,7 @@ function containsBannedWord(name) {
 // ═══════════════════════════════════════════
 function onNameInput() {
   const val   = document.getElementById('nameInput').value.trim();
+  const kelas = document.getElementById('kelasSelect').value;
   const mapel = document.getElementById('mapelSelect').value;
   const errEl = document.getElementById('nameErr');
   const isBanned = val.length > 0 && containsBannedWord(val);
@@ -2230,7 +2228,7 @@ function onNameInput() {
   } else {
     errEl.style.display = 'none';
   }
-  document.getElementById('btnStart').disabled = val.length < 1 || !mapel || isBanned;
+  document.getElementById('btnStart').disabled = val.length < 1 || !kelas || !mapel || isBanned;
 }
 
 function checkStartable() {
@@ -2250,30 +2248,10 @@ function doQuit() {
 let _lbFilter = '';
 let _lbMode = 'global'; // 'global' | 'lokal'
 
-function setLbMode(mode) {
-  _lbMode = mode;
-  document.getElementById('lbTabGlobal').classList.toggle('active', mode === 'global');
-  document.getElementById('lbTabLokal').classList.toggle('active', mode === 'lokal');
-  // Update action button
-  const btn = document.getElementById('lbActionBtn');
-  if (mode === 'global') {
-    btn.textContent = '↺ Refresh';
-    btn.style.color = '';
-    btn.style.borderColor = '';
-  } else {
-    btn.textContent = '🗑 Reset Lokal';
-    btn.style.color = 'var(--danger)';
-    btn.style.borderColor = 'rgba(248,113,113,0.3)';
-  }
-  renderLB();
-}
+function setLbMode(mode) { renderLB(); }
 
 function lbAction() {
-  if (_lbMode === 'global') {
-    renderLB();
-  } else {
-    confirmResetLB();
-  }
+  renderLB();
 }
 
 function setLbFilter(mapel) {
@@ -2288,9 +2266,7 @@ function renderLBData(lb) {
   if (_lbFilter) lb = lb.filter(r => r.mapel === _lbFilter);
   const el = document.getElementById('lbList');
   if (!lb.length) {
-    const msg = _lbMode === 'lokal'
-      ? 'Belum ada skor lokal. Main dulu! 🎮'
-      : 'Belum ada skor. Jadilah yang pertama! 🚀';
+    const msg = 'Belum ada skor. Jadilah yang pertama! 🚀';
     el.innerHTML = `<div class="lb-empty">${msg}</div>`;
     return;
   }
@@ -2310,16 +2286,6 @@ function renderLBData(lb) {
 async function renderLB() {
   const el = document.getElementById('lbList');
   const statusEl = document.getElementById('lbStatusText');
-
-  if (_lbMode === 'lokal') {
-    // Langsung dari localStorage
-    const local = loadLocalLB();
-    statusEl.textContent = `${local.length} skor tersimpan`;
-    renderLBData(local);
-    return;
-  }
-
-  // Global — fetch dari Sheets
   el.innerHTML = '<div class="lb-empty" style="opacity:0.5;">⏳ Memuat skor global...</div>';
   statusEl.textContent = '';
   const online = await fetchLBFromSheets();
@@ -2328,7 +2294,6 @@ async function renderLB() {
     renderLBData(online);
   } else {
     statusEl.textContent = 'offline · menampilkan cache';
-    // Fallback ke cache global yang tersimpan
     const cached = loadGlobalCache();
     renderLBData(cached);
   }
