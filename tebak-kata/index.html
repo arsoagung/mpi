@@ -619,6 +619,7 @@
 
   /* MAIN GAME AREA */
   .mobile-strip { display: none; }
+  .mobile-lives-bar { display: none; }
 
   .g-main {
     display: grid;
@@ -849,12 +850,42 @@
     .lb-filter-btn { font-size: 0.6rem; padding: 4px 7px; }
 
     /* GAME SCREEN */
-    #gameScreen { padding: 10px 12px 8px; gap: 8px; }
+    #gameScreen { padding: 8px 12px 8px; gap: 5px; }
 
-    .g-logo { font-size: 1.2rem; }
-    .stat-pill { padding: 2px 7px; font-size: 0.58rem; }
+    /* Header: logo | skor | timer | X — satu baris rapi */
+    .g-header { flex-wrap: nowrap; gap: 6px; margin-bottom: 0; align-items: center; }
+    .g-logo { font-size: 1rem; white-space: nowrap; }
+    .g-stats { gap: 5px; flex-wrap: nowrap; align-items: center; }
+
+    /* Sembunyikan streak di mobile */
+    .g-stats .stat-pill:nth-child(2) { display: none; }
+
+    /* Semua pill ukuran sama */
+    .stat-pill { padding: 3px 8px; font-size: 0.65rem; gap: 3px; }
     .stat-pill .val { font-size: 0.75rem; }
-    .timer-val { font-size: 0.8rem; }
+    .timer-wrap { padding: 3px 8px; font-size: 0.65rem; }
+    .timer-val { font-size: 0.75rem; }
+
+    /* Tombol keluar jadi X saja, ukuran sama dengan pill */
+    .btn-quit { padding: 3px 8px; font-size: 0; letter-spacing: 0; }
+    .btn-quit::before { content: '✕'; font-size: 0.75rem; font-family: inherit; }
+
+    /* Progress dots — sembunyikan di header, tampil di lives bar */
+    .progress-dots { display: none; }
+
+    /* Lives di header — sembunyikan, pakai mobile-lives-bar */
+    #livesDisplay { display: none; }
+
+    /* Mobile lives bar — baris tersendiri: progress kiri, hati kanan */
+    .mobile-lives-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-lives-bar .heart { font-size: 1.25rem; }
 
     .g-main {
       grid-template-columns: 1fr;
@@ -899,26 +930,28 @@
     /* Hide char panel on mobile */
     .char-panel { display: none; }
 
-    .right-panel { gap: 6px; }
+    .right-panel { gap: 0; justify-content: center; }
+    .hint-box { margin-bottom: 8px; }
 
     .hint-box { font-size: 0.82rem; padding: 8px 12px; }
 
-    .word-display { gap: 6px; min-height: 40px; padding: 4px 0; }
-    .word-group { gap: 4px; }
-    .letter-box { width: 26px; height: 34px; font-size: 1rem; }
+    /* Jawaban — lebih besar, beri jarak dari keyboard */
+    .word-display { gap: 8px; min-height: 52px; padding: 8px 0 16px; }
+    .word-group { gap: 5px; }
+    .letter-box { width: 32px; height: 40px; font-size: 1.15rem; }
 
-    /* Mobile keyboard — alphabet grid, override .key-row flex */
-    .keyboard {
+    /* Mobile keyboard — A–Z grid 7 kolom */
+    .keyboard-mobile-az {
       display: grid !important;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      padding: 2px 0;
+      grid-template-columns: repeat(7, 1fr) !important;
+      gap: 5px !important;
+      padding: 4px 0 2px;
     }
-    .key-row { display: contents !important; }
+    .keyboard-mobile-az .key-row { display: contents !important; }
     .key-btn {
       width: 100% !important;
-      height: 46px !important;
-      font-size: 0.9rem !important;
+      height: 44px !important;
+      font-size: 0.88rem !important;
       border-radius: 10px;
     }
 
@@ -1301,6 +1334,8 @@
         <button class="btn-quit" onclick="confirmQuit()" title="Keluar ke Beranda">✕ Keluar</button>
       </div>
     </div>
+    <!-- Mobile lives bar — hanya tampil di mobile, lives selalu keliatan -->
+    <div class="mobile-lives-bar" id="mobileLivesBar"></div>
 
     <!-- Mobile info strip (nama + creature + kategori) -->
     <div class="mobile-strip" id="mobileStrip">
@@ -2688,10 +2723,14 @@ function updateProgress() {
 }
 
 function updateLives() {
-  document.getElementById('livesDisplay').innerHTML =
-    Array.from({length:MAX_LIVES},(_,i) =>
-      `<div class="heart ${i>=state.lives?'lost':''}" id="heart-${i}">❤️</div>`
-    ).join('');
+  const hearts = Array.from({length:MAX_LIVES},(_,i) =>
+    `<div class="heart ${i>=state.lives?'lost':''}" id="heart-${i}">❤️</div>`
+  ).join('');
+  document.getElementById('livesDisplay').innerHTML = hearts;
+  const mlb = document.getElementById('mobileLivesBar');
+  if (mlb) mlb.innerHTML = Array.from({length:MAX_LIVES},(_,i) =>
+    `<div class="heart ${i>=state.lives?'lost':''}">❤️</div>`
+  ).join('');
 }
 
 function getCreatureEmoji() {
@@ -2744,12 +2783,13 @@ function renderKeyboard() {
   const el = document.getElementById('keyboard');
   el.innerHTML = '';
 
-  if (isMobile()) {
-    // Alphabet grid A–Z, single flat list — CSS grid handles layout
-    const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    const row = document.createElement('div');
-    row.className = 'key-row';
-    ALPHABET.forEach(letter => {
+  // Desktop: QWERTY rows — mobile CSS overrides to grid A-Z via .keyboard-mobile-az
+  const mobile = window.innerWidth <= 640;
+
+  if (mobile) {
+    // A–Z flat list — CSS grid 7-col handles layout
+    el.classList.add('keyboard-mobile-az');
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
       const btn = document.createElement('button');
       btn.className = 'key-btn';
       btn.textContent = letter;
@@ -2759,10 +2799,10 @@ function renderKeyboard() {
         btn.disabled = true;
       }
       btn.addEventListener('click', () => guess(letter));
-      row.appendChild(btn);
+      el.appendChild(btn);
     });
-    el.appendChild(row);
   } else {
+    el.classList.remove('keyboard-mobile-az');
     // QWERTY layout for desktop
     KEYBOARD_ROWS.forEach(row => {
       const r = document.createElement('div');
