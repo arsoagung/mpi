@@ -72,6 +72,11 @@
     background: white;
     animation: twinkle 3s infinite;
   }
+  @keyframes floatUp {
+    0%   { opacity:1; transform:translateX(-50%) translateY(0); }
+    100% { opacity:0; transform:translateX(-50%) translateY(-50px); }
+  }
+
   @keyframes twinkle {
     0%,100% { opacity: 0.1; transform: scale(1); }
     50%      { opacity: 0.7; transform: scale(1.3); }
@@ -620,6 +625,7 @@
   /* MAIN GAME AREA */
   .mobile-strip { display: none; }
   .mobile-lives-bar { display: none; }
+  #btnFsHome, #btnFsGame { display: inline-flex; }
 
   .g-main {
     display: grid;
@@ -852,6 +858,9 @@
     /* GAME SCREEN */
     #gameScreen { padding: 8px 12px 8px; gap: 5px; }
 
+    /* Sembunyikan tombol fullscreen di mobile */
+    #btnFsHome, #btnFsGame { display: none !important; }
+
     /* Header: logo | skor | timer | X — satu baris rapi */
     .g-header { flex-wrap: nowrap; gap: 6px; margin-bottom: 0; align-items: center; }
     .g-logo { font-size: 1rem; white-space: nowrap; }
@@ -930,15 +939,25 @@
     /* Hide char panel on mobile */
     .char-panel { display: none; }
 
-    .right-panel { gap: 0; justify-content: center; }
-    .hint-box { margin-bottom: 8px; }
+    /* Right panel: flex column, keyboard selalu di bawah */
+    .right-panel {
+      gap: 4px;
+      justify-content: flex-start;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .hint-box { font-size: 0.78rem; padding: 6px 10px; flex-shrink: 0; margin-bottom: 0; }
 
-    .hint-box { font-size: 0.82rem; padding: 8px 12px; }
+    /* Word display — shrink kalau kata panjang */
+    .word-display { gap: 5px; min-height: 36px; padding: 4px 0; flex-shrink: 1; overflow: hidden; }
+    .word-group { gap: 3px; }
+    .letter-box { width: 26px; height: 32px; font-size: 0.95rem; }
 
-    /* Jawaban — lebih besar, beri jarak dari keyboard */
-    .word-display { gap: 8px; min-height: 52px; padding: 8px 0 16px; }
-    .word-group { gap: 5px; }
-    .letter-box { width: 32px; height: 40px; font-size: 1.15rem; }
+    /* Keyboard selalu di paling bawah, tidak bisa terdesak */
+    .keyboard { flex-shrink: 0; margin-top: auto; }
 
     /* Mobile keyboard — A–Z grid 7 kolom */
     .keyboard-mobile-az {
@@ -1250,12 +1269,10 @@
         </div>
       </div>
       <div style="display:flex;gap:6px;align-items:flex-start;">
-        <button class="btn-admin" onclick="showInfo()">ℹ info</button>
-
-        <!-- ══════════ HIDE ADMIN ══════════ -->
-
-        <button class="btn-admin" onclick="showAdminAuth()" style="display:none;">⚙ admin</button>
-        <!-- ══════════ HIDE ADMIN ══════════ -->
+        <button class="btn-admin" onclick="showInfo()">ⓘ Tentang</button>
+        <button class="btn-admin" onclick="showCaraMain()">﹖ Ketentuan</button>
+        <button class="btn-admin" onclick="toggleFullscreen()" id="btnFsHome" title="Fullscreen">⌞⌝</button>
+        <button class="btn-admin" onclick="showAdminAuth()">⚙ Kelola Soal</button>
       </div>
     </div>
 
@@ -1266,7 +1283,7 @@
         <div class="play-form">
           <div class="name-input-wrap">
             <div class="input-label">Nama Pemain</div>
-            <input class="name-input" id="nameInput" type="text" placeholder="Masukkan namamu..." maxlength="20" oninput="onNameInput()" onkeydown="if(event.key===' ')event.preventDefault()" />
+            <input class="name-input" id="nameInput" type="text" placeholder="Masukkan namamu..." maxlength="20" oninput="onNameInput()" onkeydown="filterNameKey(event)" />
             <div id="nameErr" style="display:none;font-size:0.65rem;color:var(--danger);margin-top:4px;">⚠️ Nama tidak diizinkan. Gunakan nama yang sopan.</div>
           </div>
           <div class="name-input-wrap">
@@ -1298,7 +1315,11 @@
       <!-- Leaderboard Panel -->
       <div class="lb-panel">
         <div class="lb-header">
-          <div class="lb-title">🏆 Papan Skor Global</div>
+          <div class="lb-title">🏆 Papan Skor</div>
+          <div class="lb-mode-tabs">
+            <button class="lb-mode-tab active" id="lbTabGlobal" onclick="setLbMode('global')">🌐 Global</button>
+            <button class="lb-mode-tab" id="lbTabLokal" onclick="setLbMode('lokal')">🖥️ Lokal</button>
+          </div>
         </div>
         <div class="lb-filter-row" id="lbFilterRow">
           <button class="lb-filter-btn active" onclick="setLbFilter('')">Semua</button>
@@ -1312,7 +1333,7 @@
         </div>
         <!-- Action row: Refresh (global) atau Reset (lokal) -->
         <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div id="lbStatusText" style="font-size:0.55rem;color:var(--text-dim);opacity:0.7;"></div>
+          <div id="lbStatusText" style="font-size:0.6rem;color:var(--text-dim);opacity:0.85;"></div>
           <button class="btn-reset-lb" id="lbActionBtn" onclick="lbAction()">↺ Refresh</button>
         </div>
         <div class="lb-list" id="lbList"></div>
@@ -1331,6 +1352,7 @@
         <div class="timer-wrap">⏳ <span class="timer-val" id="timerVal">1:00</span></div>
         <div class="progress-dots" id="progressDots"></div>
         <div class="lives-row" id="livesDisplay"></div>
+        <button class="btn-quit" onclick="toggleFullscreen()" title="Fullscreen" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.25);color:rgba(56,189,248,0.8);" id="btnFsGame">⌞⌝</button>
         <button class="btn-quit" onclick="confirmQuit()" title="Keluar ke Beranda">✕ Keluar</button>
       </div>
     </div>
@@ -1373,16 +1395,16 @@
   <div class="modal-bg" id="adminAuthModal">
     <div class="modal" style="max-width:360px;">
       <button class="modal-close" onclick="closeModal('adminAuthModal')">✕</button>
-      <div class="modal-title">🔐 Panel Admin</div>
+      <div class="modal-title">⚙ Kelola Soal</div>
       <div style="font-size:0.72rem;color:var(--text-dim);line-height:1.6;margin-bottom:14px;padding:10px 12px;background:rgba(56,189,248,0.04);border:1px solid var(--border);border-radius:9px;">
-        Halaman ini digunakan untuk mengelola soal permainan (tambah, edit, hapus). Masukkan password admin untuk mengakses fitur ini.
+        Halaman ini digunakan untuk mengelola soal permainan (tambah, edit, hapus). Masukkan kata sandi untuk mengakses fitur ini.
       </div>
       <div class="form-group">
-        <div class="form-label">Password Admin</div>
+        <div class="form-label">Kata Sandi</div>
         <input class="form-input" id="adminPwInput" type="password" placeholder="Masukkan password..." onkeydown="if(event.key==='Enter')checkAdminPw()" />
-        <div class="error-msg" id="adminPwErr" style="display:none;">Password salah. Coba lagi.</div>
+        <div class="error-msg" id="adminPwErr" style="display:none;">Kata sandi salah. Coba lagi.</div>
       </div>
-      <button class="btn-sm" onclick="checkAdminPw()">Masuk ke Panel Admin →</button>
+      <button class="btn-sm" onclick="checkAdminPw()">Masuk ke Kelola Soal →</button>
     </div>
   </div>
 
@@ -1390,7 +1412,7 @@
   <div class="modal-bg" id="adminModal">
     <div class="modal" style="max-width:520px;">
       <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
-      <div class="modal-title">⚙️ Admin — Kelola Soal</div>
+      <div class="modal-title">⚙ Kelola Soal</div>
 
       <!-- FORM TAMBAH SOAL (selalu tampil di atas) -->
       <div id="sectionTambah">
@@ -1453,13 +1475,13 @@
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
           <div class="form-label" style="flex:1;white-space:nowrap;">Soal aktif: <span id="wordCount">0</span></div>
           <select id="daftarFilterKelas" onchange="renderAdminWords()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">🎓 Semua Kelas</option>
+            <option value="">— Semua Kelas —</option>
             <option value="Kelas X">🎓 Kelas X</option>
             <option value="Kelas XI">🎓 Kelas XI</option>
             <option value="Kelas XII">🎓 Kelas XII</option>
           </select>
           <select id="daftarFilterMapel" onchange="renderAdminWords()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">📚 Semua Mapel</option>
+            <option value="">— Semua Mapel —</option>
             <option value="📜 Sejarah">📜 Sejarah</option>
             <option value="💰 Ekonomi">💰 Ekonomi</option>
             <option value="🌍 Geografi">🌍 Geografi</option>
@@ -1478,13 +1500,13 @@
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
           <div class="form-label" style="flex:1;white-space:nowrap;">Di bank: <span id="bankCount">0</span> soal</div>
           <select id="bankFilterKelas" onchange="renderBank()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">🎓 Semua Kelas</option>
+            <option value="">— Semua Kelas —</option>
             <option value="Kelas X">🎓 Kelas X</option>
             <option value="Kelas XI">🎓 Kelas XI</option>
             <option value="Kelas XII">🎓 Kelas XII</option>
           </select>
           <select id="bankFilterMapel" onchange="renderBank()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">📚 Semua Mapel</option>
+            <option value="">— Semua Mapel —</option>
             <option value="📜 Sejarah">📜 Sejarah</option>
             <option value="💰 Ekonomi">💰 Ekonomi</option>
             <option value="🌍 Geografi">🌍 Geografi</option>
@@ -1544,7 +1566,7 @@
     <div class="modal" style="width:300px;text-align:center;">
       <button class="modal-close" onclick="closeModal('infoModal')">✕</button>
       <div style="font-size:2.2rem;margin-bottom:10px;">🎯</div>
-      <div class="modal-title" style="text-align:center;font-size:0.95rem;">Tebak Kata</div>
+      <div class="modal-title" style="text-align:center;font-size:0.95rem;">ⓘ Tentang</div>
       <div style="height:1px;background:var(--border);margin:12px 0;"></div>
       <div style="font-size:0.7rem;color:var(--text-dim);margin-bottom:4px;">Dikembangkan oleh</div>
       <div style="font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-0.01em;margin-bottom:16px;">Arso Agung Dewantoro</div>
@@ -1567,6 +1589,38 @@
          onmouseout="this.style.color='var(--text-dim)';this.style.borderColor='rgba(91,132,177,0.2)'">
         s.id/mpi-arso →
       </a>
+    </div>
+  </div>
+
+  <!-- ══════════ CARA MAIN MODAL ══════════ -->
+  <div class="modal-bg" id="caraMainModal">
+    <div class="modal" style="width:340px;">
+      <button class="modal-close" onclick="closeModal('caraMainModal')">✕</button>
+      <div style="font-size:2rem;text-align:center;margin-bottom:8px;">📋</div>
+      <div class="modal-title" style="text-align:center;margin-bottom:16px;">Ketentuan Permainan</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:0.72rem;color:var(--text-dim);line-height:1.6;">
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
+          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">📋 Dasar</div>
+          Tebak kata tersembunyi dari petunjuk yang diberikan. Ada <strong style="color:var(--text);">10 soal</strong> per sesi dengan waktu <strong style="color:var(--text);">60 detik</strong> per soal.
+        </div>
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
+          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">❤️ Nyawa</div>
+          Kamu punya <strong style="color:var(--text);">5 nyawa</strong>. Setiap tebakan salah atau waktu habis, satu nyawa berkurang. Nyawa habis = game over.
+        </div>
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
+          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">⏱ Bonus Waktu</div>
+          Setiap huruf yang benar, waktu bertambah <strong style="color:var(--text);">+3 detik</strong>!
+        </div>
+        <div style="background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:10px 14px;">
+          <div style="color:#f87171;font-weight:700;margin-bottom:4px;">🔥 3-Hit Combo!</div>
+          Tebak <strong style="color:var(--text);">3 huruf benar berturut-turut</strong> tanpa salah = <strong style="color:var(--text);">+❤️ nyawa</strong>.<br>
+          Nyawa sudah penuh? Dapat <strong style="color:var(--text);">+50 poin</strong> bonus!
+        </div>
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
+          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">✨ Skor</div>
+          Skor dihitung dari sisa waktu + nyawa. Makin cepat dan makin sedikit salah, makin tinggi skormu!
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1631,7 +1685,7 @@ const STORAGE_KEY_LB    = 'tebakkata_lb_local';   // skor lokal browser ini
 const STORAGE_KEY_LB_CACHE = 'tebakkata_lb_cache'; // cache global dari Sheets
 const STORAGE_KEY_SHEETS = 'tebakkata_sheets_url';
 const STORAGE_VERSION   = 'tebakkata_v7'; // bump to force-reset old data
-const ADMIN_PASSWORD    = 'admin'; // <-- ganti di sini
+const ADMIN_PASSWORD    = 'guruhebat'; // <-- ganti di sini
 
 const DEFAULT_WORDS = [
   // 📜 Sejarah
@@ -2199,6 +2253,7 @@ let state = {
   lives: MAX_LIVES,
   score: 0,
   streak: 0,
+  hitStreak: 0,  // streak huruf benar berturut-turut
   phase: 'home',
   timerSeconds: 0,
   timerInterval: null,
@@ -2267,8 +2322,20 @@ function containsBannedWord(name) {
 // ═══════════════════════════════════════════
 // HOME
 // ═══════════════════════════════════════════
+function filterNameKey(e) {
+  // Hanya izinkan huruf A-Z (+ backspace, delete, arrow keys)
+  const allowed = /^[a-zA-Z]$/;
+  if (!allowed.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
+
 function onNameInput() {
-  const val   = document.getElementById('nameInput').value.trim();
+  const input = document.getElementById('nameInput');
+  // Strip karakter non-huruf (misal paste)
+  input.value = input.value.replace(/[^a-zA-Z]/g, '');
+
+  const val   = input.value.trim();
   const kelas = document.getElementById('kelasSelect').value;
   const mapel = document.getElementById('mapelSelect').value;
   const errEl = document.getElementById('nameErr');
@@ -2298,10 +2365,33 @@ function doQuit() {
 let _lbFilter = '';
 let _lbMode = 'global'; // 'global' | 'lokal'
 
-function setLbMode(mode) { renderLB(); }
+function setLbMode(mode) {
+  _lbMode = mode;
+  document.getElementById('lbTabGlobal').classList.toggle('active', mode === 'global');
+  document.getElementById('lbTabLokal').classList.toggle('active', mode === 'lokal');
+
+  // Update action button
+  const btn = document.getElementById('lbActionBtn');
+  if (mode === 'global') {
+    btn.textContent = '↺ Refresh';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  } else {
+    btn.textContent = '🗑 Reset';
+    btn.style.color = 'var(--danger)';
+    btn.style.borderColor = 'rgba(248,113,113,0.3)';
+  }
+
+
+  renderLB();
+}
 
 function lbAction() {
-  renderLB();
+  if (_lbMode === 'lokal') {
+    confirmResetLB();
+  } else {
+    renderLB();
+  }
 }
 
 function setLbFilter(mapel) {
@@ -2316,7 +2406,7 @@ function renderLBData(lb) {
   if (_lbFilter) lb = lb.filter(r => r.mapel === _lbFilter);
   const el = document.getElementById('lbList');
   if (!lb.length) {
-    const msg = 'Belum ada skor. Jadilah yang pertama! 🚀';
+    const msg = _lbMode === 'lokal' ? 'Belum ada skor lokal. Main dulu! 🎮' : 'Belum ada skor. Jadilah yang pertama! 🚀';
     el.innerHTML = `<div class="lb-empty">${msg}</div>`;
     return;
   }
@@ -2336,11 +2426,20 @@ function renderLBData(lb) {
 async function renderLB() {
   const el = document.getElementById('lbList');
   const statusEl = document.getElementById('lbStatusText');
+
+  if (_lbMode === 'lokal') {
+    const local = loadLocalLB();
+    statusEl.textContent = '🖥️ Lokal — skor tersimpan di browser ini';
+    renderLBData(local);
+    return;
+  }
+
+  // Global
   el.innerHTML = '<div class="lb-empty" style="opacity:0.5;">⏳ Memuat skor global...</div>';
   statusEl.textContent = '';
   const online = await fetchLBFromSheets();
   if (online !== null) {
-    statusEl.textContent = `${online.length} skor · sinkron`;
+    statusEl.textContent = '🌐 Global — skor semua pemain dari semua perangkat';
     renderLBData(online);
   } else {
     statusEl.textContent = 'offline · menampilkan cache';
@@ -2356,6 +2455,23 @@ function doResetLB() {
   closeModal('resetModal');
   renderLB();
 }
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+document.addEventListener('fullscreenchange', () => {
+  const isFs = !!document.fullscreenElement;
+  const icon = isFs ? '✕⛶' : '⛶';
+  ['btnFsHome','btnFsGame'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = isFs ? '⌟⌜' : '⌞⌝';
+  });
+});
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -2692,6 +2808,7 @@ function startGame() {
 }
 
 function loadWord() {
+  state.hitStreak = 0;
   const entry = state.wordList[state.currentIndex];
   state.currentEntry = entry;
   state.guessed = new Set();
@@ -2835,11 +2952,33 @@ function guess(letter) {
     playKeyClick(true);
     renderWord();
     spawnParticles(btn, ['✨','⭐','💫','🌟']);
+
+    // +3 detik setiap huruf benar
+    state.timerSeconds = Math.min(state.timerSeconds + 3, ROUND_TIME + 30);
+    updateTimerUI();
+    showFloatText(btn, '+3s ⏱', '#38bdf8');
+
+    // 3-hit combo
+    state.hitStreak++;
+    if (state.hitStreak % 3 === 0) {
+      if (state.lives < MAX_LIVES) {
+        state.lives++;
+        updateLives();
+        showFloatText(btn, '3-Hit Combo! +❤️', '#f87171');
+        spawnParticles(btn, ['❤️','💖','✨']);
+      } else {
+        state.score += 50;
+        showFloatText(btn, '3-Hit Combo! +50 ✨', '#fbbf24');
+        spawnBigParticles();
+      }
+    }
+
     checkWin();
   } else {
     btn.classList.add('wrong'); btn.disabled = true;
     playKeyClick(false);
     state.lives--;
+    state.hitStreak = 0;  // reset hit streak saat salah
     updateLives(); shakeCreature(); updateCreature();
     checkLoss();
   }
@@ -2999,6 +3138,30 @@ function updateStatUI() {
   document.getElementById('streakVal').textContent = state.streak;
 }
 
+function showFloatText(btn, text, color) {
+  const shell = document.getElementById('shell');
+  const r = btn.getBoundingClientRect();
+  const sr = shell.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.textContent = text;
+  el.style.cssText = `
+    position:absolute;
+    left:${r.left - sr.left + r.width/2}px;
+    top:${r.top - sr.top - 10}px;
+    transform:translateX(-50%);
+    color:${color};
+    font-size:0.85rem;
+    font-weight:800;
+    font-family:'Outfit',sans-serif;
+    pointer-events:none;
+    z-index:999;
+    text-shadow:0 1px 6px rgba(0,0,0,0.5);
+    animation:floatUp 1.1s ease forwards;
+  `;
+  shell.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
 function spawnParticles(btn, emojis) {
   const shell = document.getElementById('shell');
   const r = btn.getBoundingClientRect();
@@ -3037,6 +3200,7 @@ function spawnBigParticles() {
 }
 
 function showInfo() { showModal('infoModal'); }
+function showCaraMain() { showModal('caraMainModal'); }
 
 // ═══ KEYBOARD SOUND (Web Audio API) ═══
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -3157,7 +3321,7 @@ document.addEventListener('keydown', e => {
 });
 
 // Close modal on bg click
-['adminAuthModal','adminModal','resetModal','infoModal','deleteModal','quitModal','editModal'].forEach(id => {
+['adminAuthModal','adminModal','resetModal','infoModal','caraMainModal','deleteModal','quitModal','editModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', e => {
     if (e.target === document.getElementById(id)) closeModal(id);
   });
