@@ -625,6 +625,7 @@
   /* MAIN GAME AREA */
   .mobile-strip { display: none; }
   .mobile-lives-bar { display: none; }
+  .lb-tabs-mobile { display: none; }
   #btnFsHome, #btnFsGame { display: inline-flex; }
 
   .g-main {
@@ -836,6 +837,13 @@
     #homeScreen:not(.active) {
       display: none;
     }
+
+    /* Tombol header — emoji only */
+    .btn-label { display: none; }
+
+    /* LB tabs — pindah ke bawah judul */
+    .lb-tabs-desktop { display: none !important; }
+    .lb-tabs-mobile { display: flex !important; }
 
     .home-header { margin-bottom: 12px; }
     .brand-title { font-size: 1.3rem; }
@@ -1269,10 +1277,10 @@
         </div>
       </div>
       <div style="display:flex;gap:6px;align-items:flex-start;">
-        <button class="btn-admin" onclick="showInfo()">ⓘ Tentang</button>
-        <button class="btn-admin" onclick="showCaraMain()">﹖ Ketentuan</button>
+        <button class="btn-admin" onclick="showInfo()">ⓘ <span class="btn-label">Tentang</span></button>
+        <button class="btn-admin" onclick="showCaraMain()">﹖ <span class="btn-label">Ketentuan</span></button>
         <button class="btn-admin" onclick="toggleFullscreen()" id="btnFsHome" title="Fullscreen">⌞⌝</button>
-        <button class="btn-admin" onclick="showAdminAuth()">⚙ Kelola Soal</button>
+        <button class="btn-admin" onclick="showAdminAuth()">⚙ <span class="btn-label">Kelola Soal</span></button>
       </div>
     </div>
 
@@ -1316,10 +1324,14 @@
       <div class="lb-panel">
         <div class="lb-header">
           <div class="lb-title">🏆 Papan Skor</div>
-          <div class="lb-mode-tabs">
-            <button class="lb-mode-tab active" id="lbTabGlobal" onclick="setLbMode('global')">🌐 Global</button>
-            <button class="lb-mode-tab" id="lbTabLokal" onclick="setLbMode('lokal')">🖥️ Lokal</button>
+          <div class="lb-mode-tabs lb-tabs-desktop">
+            <button class="lb-mode-tab active" id="lbTabGlobal" onclick="setLbMode('global')">🌐 Skor Global</button>
+            <button class="lb-mode-tab" id="lbTabLokal" onclick="setLbMode('lokal')">🖥️ Skor Lokal</button>
           </div>
+        </div>
+        <div class="lb-mode-tabs lb-tabs-mobile">
+          <button class="lb-mode-tab active" id="lbTabGlobalM" onclick="setLbMode('global')">🌐 Skor Global</button>
+          <button class="lb-mode-tab" id="lbTabLokalM" onclick="setLbMode('lokal')">🖥️ Skor Lokal</button>
         </div>
         <div class="lb-filter-row" id="lbFilterRow">
           <button class="lb-filter-btn active" onclick="setLbFilter('')">Semua</button>
@@ -1455,10 +1467,13 @@
             </select>
           </div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:12px;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-top:12px;margin-bottom:10px;">
           <button class="btn-sm" onclick="adminAddWord()">+ TAMBAH SOAL</button>
           <div class="error-msg" id="awErr" style="display:none;margin-top:0;"></div>
           <div class="success-msg" id="awOk" style="display:none;margin-top:0;"></div>
+        </div>
+        <div style="font-size:0.68rem;color:var(--accent2);background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.15);border-radius:8px;padding:8px 12px;margin-bottom:16px;line-height:1.6;">
+          ℹ️ Soal yang ditambahkan hanya tersimpan di <strong style="color:var(--accent);">browser ini</strong>. Jika pindah perangkat, ganti browser, atau hapus cache, soal tambahan tidak akan muncul.
         </div>
       </div>
 
@@ -2367,8 +2382,12 @@ let _lbMode = 'global'; // 'global' | 'lokal'
 
 function setLbMode(mode) {
   _lbMode = mode;
-  document.getElementById('lbTabGlobal').classList.toggle('active', mode === 'global');
-  document.getElementById('lbTabLokal').classList.toggle('active', mode === 'lokal');
+  ['lbTabGlobal','lbTabGlobalM'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.classList.toggle('active', mode === 'global');
+  });
+  ['lbTabLokal','lbTabLokalM'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.classList.toggle('active', mode === 'lokal');
+  });
 
   // Update action button
   const btn = document.getElementById('lbActionBtn');
@@ -2402,6 +2421,15 @@ function setLbFilter(mapel) {
   renderLB();
 }
 
+function formatTanggal(raw) {
+  if (!raw) return '';
+  try {
+    const d = new Date(raw);
+    if (isNaN(d)) return raw; // kalau bukan ISO, tampilkan apa adanya
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' });
+  } catch(e) { return raw; }
+}
+
 function renderLBData(lb) {
   if (_lbFilter) lb = lb.filter(r => r.mapel === _lbFilter);
   const el = document.getElementById('lbList');
@@ -2416,7 +2444,7 @@ function renderLBData(lb) {
       <div class="lb-rank">${medals[i] || (i+1)}</div>
       <div class="lb-name">
         ${escHtml(row.name)}
-        <div class="lb-meta">${escHtml(row.kelas||'')}${row.kelas && row.mapel ? ' · ' : ''}${escHtml(row.mapel||'')}</div>
+        <div class="lb-meta">${escHtml(row.kelas||'')}${row.kelas && row.mapel ? ' · ' : ''}${escHtml(row.mapel||'')}${row.date ? ' · ' + formatTanggal(row.date) : ''}</div>
       </div>
       <div class="lb-score">${row.score}</div>
     </div>
@@ -2429,7 +2457,7 @@ async function renderLB() {
 
   if (_lbMode === 'lokal') {
     const local = loadLocalLB();
-    statusEl.textContent = '🖥️ Lokal — skor tersimpan di browser ini';
+    statusEl.textContent = '🖥️ Skor Lokal — tersimpan di browser ini';
     renderLBData(local);
     return;
   }
@@ -2439,7 +2467,7 @@ async function renderLB() {
   statusEl.textContent = '';
   const online = await fetchLBFromSheets();
   if (online !== null) {
-    statusEl.textContent = '🌐 Global — skor semua pemain dari semua perangkat';
+    statusEl.textContent = '🌐 Skor Global — semua pemain dari semua perangkat';
     renderLBData(online);
   } else {
     statusEl.textContent = 'offline · menampilkan cache';
@@ -3355,11 +3383,13 @@ function sendToSheets(entry) {
 
 async function fetchLBFromSheets() {
   try {
-    const res = await fetch(SHEETS_URL + '?t=' + Date.now());
+    // Selalu hapus cache lama sebelum fetch, supaya data Sheet terbaru selalu tampil
+    localStorage.removeItem('tebakkata_lb_cache');
+    const res = await fetch(SHEETS_URL + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) return null;
     const data = await res.json();
     if (!Array.isArray(data)) return null;
-    saveGlobalCache(data); // simpan sebagai cache offline
+    saveGlobalCache(data);
     return data;
   } catch(e) {
     return null;
