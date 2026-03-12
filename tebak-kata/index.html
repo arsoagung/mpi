@@ -968,18 +968,16 @@
     .keyboard { flex-shrink: 0; margin-top: auto; }
 
     /* Mobile keyboard — A–Z grid 7 kolom */
-    .keyboard-mobile-az {
-      display: grid !important;
-      grid-template-columns: repeat(7, 1fr) !important;
-      gap: 5px !important;
-      padding: 4px 0 2px;
-    }
-    .keyboard-mobile-az .key-row { display: contents !important; }
+    /* Mobile QWERTY keyboard */
+    #keyboard { gap: 4px !important; }
+    .key-row { gap: 4px !important; justify-content: center !important; }
     .key-btn {
-      width: 100% !important;
-      height: 44px !important;
-      font-size: 0.88rem !important;
-      border-radius: 10px;
+      width: 30px !important;
+      height: 42px !important;
+      font-size: 0.82rem !important;
+      border-radius: 8px;
+      padding: 0 !important;
+      flex-shrink: 0;
     }
 
     /* Modals full width on mobile */
@@ -1278,7 +1276,7 @@
       </div>
       <div style="display:flex;gap:6px;align-items:flex-start;">
         <button class="btn-admin" onclick="showInfo()">ⓘ <span class="btn-label">Tentang</span></button>
-        <button class="btn-admin" onclick="showCaraMain()">﹖ <span class="btn-label">Ketentuan</span></button>
+        <button class="btn-admin" onclick="showCaraMain()">? <span class="btn-label">Ketentuan</span></button>
         <button class="btn-admin" onclick="toggleFullscreen()" id="btnFsHome" title="Fullscreen">⌞⌝</button>
         <button class="btn-admin" onclick="showAdminAuth()">⚙ <span class="btn-label">Kelola Soal</span></button>
       </div>
@@ -2932,19 +2930,24 @@ function renderKeyboard() {
   const mobile = window.innerWidth <= 640;
 
   if (mobile) {
-    // A–Z flat list — CSS grid 7-col handles layout
-    el.classList.add('keyboard-mobile-az');
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
-      const btn = document.createElement('button');
-      btn.className = 'key-btn';
-      btn.textContent = letter;
-      btn.id = 'key-' + letter;
-      if (state.guessed.has(letter)) {
-        btn.classList.add(state.currentEntry.word.includes(letter) ? 'correct' : 'wrong');
-        btn.disabled = true;
-      }
-      btn.addEventListener('click', () => guess(letter));
-      el.appendChild(btn);
+    // QWERTY rows — sama seperti desktop tapi pakai class mobile
+    el.classList.remove('keyboard-mobile-az');
+    KEYBOARD_ROWS.forEach(row => {
+      const r = document.createElement('div');
+      r.className = 'key-row';
+      row.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = 'key-btn';
+        btn.textContent = letter;
+        btn.id = 'key-' + letter;
+        if (state.guessed.has(letter)) {
+          btn.classList.add(state.currentEntry.word.includes(letter) ? 'correct' : 'wrong');
+          btn.disabled = true;
+        }
+        btn.addEventListener('click', () => guess(letter));
+        r.appendChild(btn);
+      });
+      el.appendChild(r);
     });
   } else {
     el.classList.remove('keyboard-mobile-az');
