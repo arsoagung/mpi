@@ -370,16 +370,72 @@
   .lb-mode-tab:not(.active):hover { color: var(--accent2); }
 
   /* LEADERBOARD PANEL */
+  /* === FOLDER TAB SYSTEM (desktop only) === */
+  .lb-wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .lb-folder-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .lb-folder-tab {
+    flex: 1;
+    padding: 9px 16px 11px;
+    background: rgba(10, 20, 40, 0.6);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    color: rgba(180,210,255,0.3);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    position: relative;
+    bottom: -1px;
+    overflow: visible;
+  }
+  .lb-folder-tab:hover {
+    color: rgba(180,210,255,0.65);
+    background: rgba(10, 20, 40, 0.6);
+  }
+  .lb-folder-tab.active {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--gold);
+    z-index: 1;
+  }
+
+
   .lb-panel {
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 0 0 12px 12px;
     padding: 18px 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     min-height: 0;
+    flex: 1;
+    position: relative;
   }
+
+  /* Mode lokal aktif: panel round kanan atas */
+  .lb-panel.mode-lokal { border-radius: 0 12px 12px 12px; }
+  /* Mode global aktif: panel round kiri atas */
+  .lb-panel.mode-global { border-radius: 12px 0 12px 12px; }
+
+  /* Desktop: header mobile disembunyikan */
+  .lb-header-desktop { display: flex; }
+  .lb-header-mobile { display: none; }
 
   .lb-header {
     display: flex;
@@ -413,6 +469,7 @@
   .btn-reset-lb:hover {
     color: var(--danger);
     border-color: rgba(248,113,113,0.3);
+    background: rgba(248,113,113,0.07);
   }
 
   .lb-list {
@@ -733,19 +790,61 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     gap: 12px;
   }
 
+  .keyboard-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: fit-content;
+    margin-top: 30px;
+  }
+
+  .keyboard-group .hint-box {
+    width: 100%;
+  }
+
   .hint-box {
+    background: rgba(56,189,248,0.06);
+    border: 1px solid rgba(56,189,248,0.18);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  .hint-box-icon {
     font-size: 0.95rem;
-    color: var(--text-dim);
-    padding: 10px 16px;
-    background: rgba(56,189,248,0.04);
-    border-left: 3px solid var(--accent3);
-    border-radius: 0 8px 8px 0;
+    margin-top: 2px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .hint-box-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hint-box-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #38bdf8;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .hint-box-text {
+    font-size: 0.92rem;
+    color: var(--text);
     font-style: italic;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   .word-display {
@@ -756,6 +855,7 @@
     justify-content: center;
     min-height: 54px;
     padding: 6px 0;
+    width: 100%;
   }
 
   .word-group {
@@ -844,6 +944,11 @@
     /* LB tabs — pindah ke bawah judul */
     .lb-tabs-desktop { display: none !important; }
     .lb-tabs-mobile { display: flex !important; }
+    .lb-header-desktop { display: none !important; }
+    .lb-header-mobile { display: flex !important; align-items: center; justify-content: space-between; }
+    .lb-folder-tabs { display: none !important; }
+    .lb-panel { border-radius: 16px !important; }
+    .lb-wrap { display: contents; }
 
     .home-header { margin-bottom: 12px; }
     .brand-title { font-size: 1.3rem; }
@@ -957,7 +1062,8 @@
       display: flex;
       flex-direction: column;
     }
-    .hint-box { font-size: 0.78rem; padding: 6px 10px; flex-shrink: 0; margin-bottom: 0; }
+    .hint-box { font-size: 0.78rem; padding: 8px 12px; flex-shrink: 0; margin-bottom: 0; }
+    .hint-box-text { font-size: 0.8rem; }
 
     /* Word display — shrink kalau kata panjang */
     .word-display { gap: 5px; min-height: 36px; padding: 4px 0; flex-shrink: 1; overflow: hidden; }
@@ -966,6 +1072,7 @@
 
     /* Keyboard selalu di paling bawah, tidak bisa terdesak */
     .keyboard { flex-shrink: 0; margin-top: auto; }
+    .keyboard-group { width: 100%; align-items: stretch; }
 
     /* Mobile keyboard — A–Z grid 7 kolom */
     /* Mobile QWERTY keyboard */
@@ -1228,8 +1335,36 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  .admin-tab:hover { color: var(--text); }
+  .admin-tab:hover { color: var(--accent); background: rgba(56,189,248,0.07); }
   .admin-tab.active { background: var(--surface2); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+
+  .admin-filter-select {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 7px;
+    padding: 3px 22px 3px 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.65rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 7px center;
+    transition: all 0.2s;
+  }
+  .admin-filter-select:hover {
+    color: var(--accent2);
+    border-color: rgba(56,189,248,0.35);
+    background-color: rgba(56,189,248,0.06);
+  }
+  .admin-filter-select:focus {
+    color: var(--accent);
+    border-color: rgba(56,189,248,0.5);
+    background-color: rgba(56,189,248,0.08);
+  }
 
   /* Emoji picker */
   .ep-btn {
@@ -1277,8 +1412,8 @@
       <div style="display:flex;gap:6px;align-items:flex-start;">
         <button class="btn-admin" onclick="showInfo()">ⓘ <span class="btn-label">Tentang</span></button>
         <button class="btn-admin" onclick="showCaraMain()">? <span class="btn-label">Ketentuan</span></button>
-        <button class="btn-admin" onclick="toggleFullscreen()" id="btnFsHome" title="Fullscreen">⌞⌝</button>
         <button class="btn-admin" onclick="showAdminAuth()">⚙ <span class="btn-label">Kelola Soal</span></button>
+        <button class="btn-admin" onclick="toggleFullscreen()" id="btnFsHome" title="Fullscreen">⌞⌝</button>
       </div>
     </div>
 
@@ -1305,6 +1440,7 @@
             <div class="input-label">Mata Pelajaran</div>
             <select class="select-input" id="mapelSelect" onchange="onNameInput()">
               <option value="">— Pilih Mata Pelajaran —</option>
+              <option value="🧠 Umum">🧠 Umum</option>
               <option value="📜 Sejarah">📜 Sejarah</option>
               <option value="💰 Ekonomi">💰 Ekonomi</option>
               <option value="🌍 Geografi">🌍 Geografi</option>
@@ -1315,24 +1451,29 @@
             </select>
           </div>
           <button class="btn-start" id="btnStart" onclick="startGame()" disabled style="margin-top:18px;">Mulai Bermain →</button>
+          <div id="soalErr" style="display:none;font-size:0.65rem;color:#fbbf24;opacity:0.9;margin-top:6px;text-align:center;line-height:1.5;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:6px 10px;"></div>
         </div>
       </div>
 
       <!-- Leaderboard Panel -->
-      <div class="lb-panel">
-        <div class="lb-header">
+      <div class="lb-wrap">
+        <!-- Desktop: folder tabs di luar panel -->
+        <div class="lb-folder-tabs lb-header-desktop">
+          <button class="lb-folder-tab active" id="lbTabLokal" onclick="setLbMode('lokal')">🏆 Papan Skor Lokal</button>
+          <button class="lb-folder-tab" id="lbTabGlobal" onclick="setLbMode('global')">🏆 Papan Skor Global</button>
+        </div>
+        <div class="lb-panel">
+        <!-- Mobile: judul + tab kecil terpisah -->
+        <div class="lb-header-mobile">
           <div class="lb-title">🏆 Papan Skor</div>
-          <div class="lb-mode-tabs lb-tabs-desktop">
-            <button class="lb-mode-tab active" id="lbTabGlobal" onclick="setLbMode('global')">🌐 Skor Global</button>
-            <button class="lb-mode-tab" id="lbTabLokal" onclick="setLbMode('lokal')">🖥️ Skor Lokal</button>
-          </div>
         </div>
         <div class="lb-mode-tabs lb-tabs-mobile">
-          <button class="lb-mode-tab active" id="lbTabGlobalM" onclick="setLbMode('global')">🌐 Skor Global</button>
-          <button class="lb-mode-tab" id="lbTabLokalM" onclick="setLbMode('lokal')">🖥️ Skor Lokal</button>
+          <button class="lb-mode-tab active" id="lbTabLokalM" onclick="setLbMode('lokal')">🖥️ Skor Lokal</button>
+          <button class="lb-mode-tab" id="lbTabGlobalM" onclick="setLbMode('global')">🌐 Skor Global</button>
         </div>
         <div class="lb-filter-row" id="lbFilterRow">
           <button class="lb-filter-btn active" onclick="setLbFilter('')">Semua</button>
+          <button class="lb-filter-btn" onclick="setLbFilter('🧠 Umum')">🧠 Umum</button>
           <button class="lb-filter-btn" onclick="setLbFilter('📜 Sejarah')">📜 Sejarah</button>
           <button class="lb-filter-btn" onclick="setLbFilter('💰 Ekonomi')">💰 Ekonomi</button>
           <button class="lb-filter-btn" onclick="setLbFilter('🌍 Geografi')">🌍 Geografi</button>
@@ -1342,12 +1483,14 @@
           <button class="lb-filter-btn" onclick="setLbFilter('🧬 Biologi')">🧬 Biologi</button>
         </div>
         <!-- Action row: Refresh (global) atau Reset (lokal) -->
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div id="lbStatusText" style="font-size:0.6rem;color:var(--text-dim);opacity:0.85;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+          <div id="lbStatusText" style="font-size:0.72rem;color:var(--text-dim);opacity:0.85;flex:1;"></div>
+          <button id="lbExportBtn" onclick="exportLBtoExcel()" style="display:none;font-family:'Outfit',sans-serif;font-size:0.55rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;border:1px solid rgba(74,222,128,0.35);background:rgba(74,222,128,0.08);color:rgba(74,222,128,0.8);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#4ade80';this.style.borderColor='rgba(74,222,128,0.6)';this.style.background='rgba(74,222,128,0.14)'" onmouseout="this.style.color='rgba(74,222,128,0.8)';this.style.borderColor='rgba(74,222,128,0.35)';this.style.background='rgba(74,222,128,0.08)'">📊 Ekspor Nilai</button>
           <button class="btn-reset-lb" id="lbActionBtn" onclick="lbAction()">↺ Refresh</button>
         </div>
         <div class="lb-list" id="lbList"></div>
-      </div>
+      </div><!-- /.lb-panel -->
+      </div><!-- /.lb-wrap -->
     </div>
   </div>
 
@@ -1363,7 +1506,7 @@
         <div class="progress-dots" id="progressDots"></div>
         <div class="lives-row" id="livesDisplay"></div>
         <button class="btn-quit" onclick="toggleFullscreen()" title="Fullscreen" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.25);color:rgba(56,189,248,0.8);" id="btnFsGame">⌞⌝</button>
-        <button class="btn-quit" onclick="confirmQuit()" title="Keluar ke Beranda">✕ Keluar</button>
+        <button class="btn-quit" onclick="confirmQuit()" title="Keluar ke Beranda">✕</button>
       </div>
     </div>
     <!-- Mobile lives bar — hanya tampil di mobile, lives selalu keliatan -->
@@ -1385,9 +1528,17 @@
         <div class="char-status" id="charStatus">Siap!</div>
       </div>
       <div class="right-panel">
-        <div class="hint-box" id="hintBox">💡 ...</div>
         <div class="word-display" id="wordDisplay"></div>
-        <div class="keyboard" id="keyboard"></div>
+        <div class="keyboard-group">
+          <div class="hint-box" id="hintBox">
+            <span class="hint-box-icon">💡</span>
+            <div class="hint-box-inner">
+              <div class="hint-box-label">Petunjuk</div>
+              <div class="hint-box-text" id="hintBoxText">...</div>
+            </div>
+          </div>
+          <div class="keyboard" id="keyboard"></div>
+        </div>
       </div>
     </div>
 
@@ -1426,6 +1577,57 @@
 
       <!-- FORM TAMBAH SOAL (selalu tampil di atas) -->
       <div id="sectionTambah">
+        <div style="font-size:0.68rem;color:var(--text-dim);background:rgba(91,132,177,0.06);border:1px solid rgba(91,132,177,0.18);border-radius:8px;padding:10px 12px;margin-bottom:12px;line-height:1.7;">
+          <div style="margin-bottom:8px;">⚠︎ Data yang ditambahkan hanya tersimpan di <strong style="color:#7dd3fc;">browser ini</strong>. Jika pindah perangkat, ganti browser, atau hapus cache, soal tambahan tidak akan muncul. Lakukan pencadangan secara berkala dan unggah kembali jika diperlukan.</div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button onclick="unduhSoalLokal()" style="flex:1;text-align:center;font-family:'Outfit',sans-serif;font-size:0.6rem;font-weight:600;padding:6px 8px;background:rgba(91,132,177,0.12);border:1px solid rgba(91,132,177,0.3);color:var(--text-dim);border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:0.03em;" onmouseover="this.style.color='var(--accent2)';this.style.borderColor='rgba(56,189,248,0.35)'" onmouseout="this.style.color='var(--text-dim)';this.style.borderColor='rgba(91,132,177,0.3)'"><span style="font-size:0.6rem;">⬇</span> Unduh Data</button>
+            <label style="flex:1;text-align:center;font-family:'Outfit',sans-serif;font-size:0.6rem;font-weight:600;padding:6px 8px;background:rgba(91,132,177,0.12);border:1px solid rgba(91,132,177,0.3);color:var(--text-dim);border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:0.03em;display:flex;align-items:center;justify-content:center;gap:4px;" onmouseover="this.style.color='var(--accent2)';this.style.borderColor='rgba(56,189,248,0.35)'" onmouseout="this.style.color='var(--text-dim)';this.style.borderColor='rgba(91,132,177,0.3)'"><span style="font-size:0.6rem;">⬆</span> Unggah Data<input type="file" accept=".json" onchange="pulihkanSoalLokal(event)" style="display:none;" /></label>
+            <button onclick="confirmResetData()" style="flex:1;text-align:center;font-family:'Outfit',sans-serif;font-size:0.6rem;font-weight:600;padding:6px 8px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);color:rgba(248,113,113,0.55);border-radius:6px;cursor:pointer;transition:all 0.2s;letter-spacing:0.03em;" onmouseover="this.style.color='var(--danger)';this.style.borderColor='rgba(248,113,113,0.45)';this.style.background='rgba(248,113,113,0.1)'" onmouseout="this.style.color='rgba(248,113,113,0.55)';this.style.borderColor='rgba(248,113,113,0.2)';this.style.background='rgba(248,113,113,0.06)'">🗑️ Reset Data</button>
+            <div id="restoreMsgInline" style="font-size:0.6rem;color:var(--success);display:none;align-self:center;"></div>
+          </div>
+        </div>
+        <!-- Kelas & Mapel dulu -->
+        <div style="display:flex;gap:8px;">
+          <div class="form-group" style="flex:1;">
+            <div class="form-label">Kelas</div>
+            <select class="form-input" id="awKelas" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;">
+              <option value="">— Kelas —</option>
+              <option value="Kelas X">Kelas X</option>
+              <option value="Kelas XI">Kelas XI</option>
+              <option value="Kelas XII">Kelas XII</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:2;">
+            <div class="form-label">Mata Pelajaran</div>
+            <select class="form-input" id="awMapel" onchange="onAwMapelChange(this)" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;">
+              <option value="">— Mata Pelajaran —</option>
+              <option value="🧠 Umum">🧠 Umum</option>
+              <option value="📜 Sejarah">📜 Sejarah</option>
+              <option value="💰 Ekonomi">💰 Ekonomi</option>
+              <option value="🌍 Geografi">🌍 Geografi</option>
+              <option value="👥 Sosiologi">👥 Sosiologi</option>
+              <option value="⚛️ Fisika">⚛️ Fisika</option>
+              <option value="🧪 Kimia">🧪 Kimia</option>
+              <option value="🧬 Biologi">🧬 Biologi</option>
+              <option value="__new__" style="color:#38bdf8;">＋ Tambah Mata Pelajaran</option>
+            </select>
+            <!-- Form tambah mapel baru -->
+            <div id="newMapelForm" style="display:none;margin-top:10px;background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.2);border-radius:10px;padding:10px 12px;">
+              <div style="font-size:0.65rem;color:var(--accent2);margin-bottom:8px;font-weight:600;letter-spacing:0.05em;">MAPEL BARU</div>
+              <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
+                <button type="button" id="btnPickEmoji" onclick="openEmojiPopup()" style="width:42px;height:42px;font-size:1.3rem;background:var(--surface3);border:1px solid var(--border);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Pilih emoji">➕</button>
+                <input id="newMapelEmoji" style="display:none;" />
+                <input id="newMapelNama" class="form-input" placeholder="Nama mapel, contoh: Matematika" style="flex:1;padding:6px 10px;font-size:0.8rem;" maxlength="30" />
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button class="btn-sm" onclick="saveNewMapel()" style="font-size:0.65rem;padding:5px 12px;">+ TAMBAH MAPEL</button>
+                <button onclick="document.getElementById('newMapelForm').style.display='none';document.getElementById('awMapel').value='';" style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.4);color:var(--danger);cursor:pointer;font-size:0.65rem;padding:5px 10px;border-radius:8px;font-family:'Outfit',sans-serif;">Batal</button>
+                <div id="newMapelErr" style="font-size:0.62rem;color:var(--danger);display:none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Lalu kata dan petunjuk -->
         <div class="form-group">
           <div style="display:flex;justify-content:space-between;align-items:baseline;">
             <div class="form-label">Kata <span style="color:var(--text-dim);font-weight:400;">(maks. 30 huruf + spasi)</span></div>
@@ -1441,61 +1643,37 @@
           <div class="form-label">Petunjuk</div>
           <input class="form-input" id="awHint" placeholder="Deskripsi singkat kata ini..." />
         </div>
-        <div style="display:flex;gap:8px;">
-          <div class="form-group" style="flex:1;margin-bottom:0;">
-            <div class="form-label">Kelas</div>
-            <select class="form-input" id="awKelas" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;">
-              <option value="">— Kelas —</option>
-              <option value="Kelas X">Kelas X</option>
-              <option value="Kelas XI">Kelas XI</option>
-              <option value="Kelas XII">Kelas XII</option>
-            </select>
-          </div>
-          <div class="form-group" style="flex:2;margin-bottom:0;">
-            <div class="form-label">Mata Pelajaran</div>
-            <select class="form-input" id="awMapel" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;">
-              <option value="">— Mata Pelajaran —</option>
-              <option value="📜 Sejarah">📜 Sejarah</option>
-              <option value="💰 Ekonomi">💰 Ekonomi</option>
-              <option value="🌍 Geografi">🌍 Geografi</option>
-              <option value="👥 Sosiologi">👥 Sosiologi</option>
-              <option value="⚛️ Fisika">⚛️ Fisika</option>
-              <option value="🧪 Kimia">🧪 Kimia</option>
-              <option value="🧬 Biologi">🧬 Biologi</option>
-            </select>
-          </div>
-        </div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:12px;margin-bottom:10px;">
           <button class="btn-sm" onclick="adminAddWord()">+ TAMBAH SOAL</button>
           <div class="error-msg" id="awErr" style="display:none;margin-top:0;"></div>
           <div class="success-msg" id="awOk" style="display:none;margin-top:0;"></div>
         </div>
-        <div style="font-size:0.68rem;color:var(--accent2);background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.15);border-radius:8px;padding:8px 12px;margin-bottom:16px;line-height:1.6;">
-          ⚠︎ Soal yang ditambahkan hanya tersimpan di <strong style="color:var(--accent);">browser ini</strong>. Jika pindah perangkat, ganti browser, atau hapus cache, soal tambahan tidak akan muncul.
-        </div>
       </div>
+
+
 
       <div style="height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3;margin-bottom:16px;"></div>
 
       <!-- TABS: DAFTAR SOAL & BANK SOAL -->
       <div style="display:flex;gap:4px;margin-bottom:12px;background:var(--surface3);border-radius:10px;padding:4px;">
         <button class="admin-tab active" id="tabDaftar" onclick="switchTab('daftar')">📋 Daftar Soal</button>
-        <button class="admin-tab" id="tabBank" onclick="switchTab('bank')">🗄️ Bank Soal</button>
+        <button class="admin-tab" id="tabArsip" onclick="switchTab('arsip')">🗄️ Arsip Soal</button>
       </div>
 
       <!-- TAB: DAFTAR SOAL -->
       <div id="tabPanelDaftar">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
           <div class="form-label" style="flex:1;white-space:nowrap;">Soal aktif: <span id="wordCount">0</span></div>
-          <select id="daftarFilterKelas" onchange="renderAdminWords()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">— Semua Kelas —</option>
+          <select id="daftarFilterKelas" onchange="renderAdminWords()" class="admin-filter-select">
+            <option value="">— Pilih Kelas —</option>
             <option value="Kelas X">🎓 Kelas X</option>
             <option value="Kelas XI">🎓 Kelas XI</option>
             <option value="Kelas XII">🎓 Kelas XII</option>
           </select>
-          <select id="daftarFilterMapel" onchange="renderAdminWords()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">— Semua Mapel —</option>
-            <option value="📜 Sejarah">📜 Sejarah</option>
+          <select id="daftarFilterMapel" onchange="renderAdminWords()" class="admin-filter-select">
+            <option value="">— Pilih Mapel —</option>
+            <option value="🧠 Umum">🧠 Umum</option>
+              <option value="📜 Sejarah">📜 Sejarah</option>
             <option value="💰 Ekonomi">💰 Ekonomi</option>
             <option value="🌍 Geografi">🌍 Geografi</option>
             <option value="👥 Sosiologi">👥 Sosiologi</option>
@@ -1509,18 +1687,19 @@
       </div>
 
       <!-- TAB: BANK SOAL -->
-      <div id="tabPanelBank" style="display:none;">
+      <div id="tabPanelArsip" style="display:none;">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
           <div class="form-label" style="flex:1;white-space:nowrap;">Di bank: <span id="bankCount">0</span> soal</div>
-          <select id="bankFilterKelas" onchange="renderBank()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">— Semua Kelas —</option>
+          <select id="bankFilterKelas" onchange="renderBank()" class="admin-filter-select">
+            <option value="">— Pilih Kelas —</option>
             <option value="Kelas X">🎓 Kelas X</option>
             <option value="Kelas XI">🎓 Kelas XI</option>
             <option value="Kelas XII">🎓 Kelas XII</option>
           </select>
-          <select id="bankFilterMapel" onchange="renderBank()" style="background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);border-radius:7px;padding:3px 22px 3px 8px;font-family:'Outfit',sans-serif;font-size:0.65rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 7px center;">
-            <option value="">— Semua Mapel —</option>
-            <option value="📜 Sejarah">📜 Sejarah</option>
+          <select id="bankFilterMapel" onchange="renderBank()" class="admin-filter-select">
+            <option value="">— Pilih Mapel —</option>
+            <option value="🧠 Umum">🧠 Umum</option>
+              <option value="📜 Sejarah">📜 Sejarah</option>
             <option value="💰 Ekonomi">💰 Ekonomi</option>
             <option value="🌍 Geografi">🌍 Geografi</option>
             <option value="👥 Sosiologi">👥 Sosiologi</option>
@@ -1574,6 +1753,20 @@
     </div>
   </div>
 
+  <!-- ══════════ CONFIRM RESET DATA MODAL ══════════ -->
+  <div class="modal-bg" id="resetDataModal">
+    <div class="modal" style="width:320px;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:8px;">⚠️</div>
+      <div class="modal-title" style="text-align:center;margin-bottom:8px;">Reset Semua Data?</div>
+      <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:6px;line-height:1.6;">Seluruh soal tambahan, bank soal, mapel kustom, dan <strong style="color:var(--text);">skor lokal</strong> akan dihapus. Data soal bawaan akan dikembalikan ke kondisi awal.</div>
+      <div style="font-size:0.68rem;color:var(--danger);margin-bottom:20px;font-weight:600;">Tindakan ini tidak dapat dibatalkan.</div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="btn-danger-sm" style="padding:8px 16px;font-size:0.72rem;" onclick="doResetData()">Ya, Reset Semua</button>
+        <button class="btn-sm" style="padding:8px 16px;" onclick="closeModal('resetDataModal')">Batal</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ══════════ INFO MODAL ══════════ -->
   <div class="modal-bg" id="infoModal">
     <div class="modal" style="width:300px;text-align:center;">
@@ -1607,33 +1800,40 @@
 
   <!-- ══════════ CARA MAIN MODAL ══════════ -->
   <div class="modal-bg" id="caraMainModal">
-    <div class="modal" style="width:340px;">
+    <div class="modal" style="width:360px;">
       <button class="modal-close" onclick="closeModal('caraMainModal')">✕</button>
-      <div style="font-size:2rem;text-align:center;margin-bottom:8px;">📋</div>
-      <div class="modal-title" style="text-align:center;margin-bottom:16px;">Ketentuan Permainan</div>
-      <div style="display:flex;flex-direction:column;gap:10px;font-size:0.72rem;color:var(--text-dim);line-height:1.6;">
-        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
-          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">📋 Dasar</div>
-          Tebak kata tersembunyi dari petunjuk yang diberikan. Ada <strong style="color:var(--text);">10 soal</strong> per sesi dengan waktu <strong style="color:var(--text);">60 detik</strong> per soal.
+      <div style="text-align:center;margin-bottom:16px;">
+        <div class="modal-title">Ketentuan Permainan</div>
+        <div style="font-size:0.6rem;color:var(--text-dim);margin-top:3px;opacity:0.6;">Baca sebelum bermain</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.68rem;color:var(--text-dim);line-height:1.5;">
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
+          <div style="font-size:1.3rem;margin-bottom:6px;">📋</div>
+          <div style="color:var(--accent);font-weight:700;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Dasar</div>
+          Tebak kata dari petunjuk. <strong style="color:var(--text);">10 soal</strong>, <strong style="color:var(--text);">60 detik</strong> per soal.
         </div>
-        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
-          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">❤️ Nyawa</div>
-          Kamu punya <strong style="color:var(--text);">5 nyawa</strong>. Setiap tebakan salah atau waktu habis, satu nyawa berkurang. Nyawa habis = game over.
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
+          <div style="font-size:1.3rem;margin-bottom:6px;">❤️</div>
+          <div style="color:var(--accent);font-weight:700;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Nyawa</div>
+          Mulai dengan <strong style="color:var(--text);">5 nyawa</strong>. Salah atau habis waktu = −1 nyawa.
         </div>
-        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
-          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">⏱ Bonus Waktu</div>
-          Setiap huruf yang benar, waktu bertambah <strong style="color:var(--text);">+3 detik</strong>!
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
+          <div style="font-size:1.3rem;margin-bottom:6px;">⏱</div>
+          <div style="color:var(--accent);font-weight:700;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Bonus Waktu</div>
+          Setiap huruf benar, waktu <strong style="color:var(--text);">+3 detik</strong>.
         </div>
-        <div style="background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:10px 14px;">
-          <div style="color:#f87171;font-weight:700;margin-bottom:4px;">🔥 3-Hit Combo!</div>
-          Tebak <strong style="color:var(--text);">3 huruf benar berturut-turut</strong> tanpa salah = <strong style="color:var(--text);">+❤️ nyawa</strong>.<br>
-          Nyawa sudah penuh? Dapat <strong style="color:var(--text);">+50 poin</strong> bonus!
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 12px;">
+          <div style="font-size:1.3rem;margin-bottom:6px;">🔥</div>
+          <div style="color:var(--accent);font-weight:700;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">3-Hit Combo</div>
+          <strong style="color:var(--text);">3 huruf benar</strong> berturut = <strong style="color:var(--text);">+❤️</strong> atau <strong style="color:var(--text);">+50 poin</strong>.
         </div>
-        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
-          <div style="color:var(--accent);font-weight:700;margin-bottom:4px;">✨ Skor</div>
-          Skor dihitung dari sisa waktu + nyawa. Makin cepat dan makin sedikit salah, makin tinggi skormu!
+        <div style="background:rgba(56,189,248,0.05);border:1px solid var(--border);border-radius:10px;padding:10px 12px;grid-column:span 2;">
+          <div style="font-size:1.3rem;margin-bottom:6px;">✨</div>
+          <div style="color:var(--accent);font-weight:700;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Skor</div>
+          Dihitung dari sisa waktu + nyawa tersisa. Makin cepat &amp; sedikit salah = makin tinggi!
         </div>
       </div>
+      <div style="text-align:center;margin-top:10px;font-size:0.6rem;color:var(--text-dim);opacity:0.4;">Selamat bermain 🎉</div>
     </div>
   </div>
 
@@ -1668,7 +1868,8 @@
         <div class="form-group" style="flex:2;margin-bottom:0;">
           <div class="form-label">Mata Pelajaran</div>
           <select class="form-input" id="editMapel" style="appearance:none;-webkit-appearance:none;padding-right:32px;cursor:pointer;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b84b1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;">
-            <option value="📜 Sejarah">📜 Sejarah</option>
+            <option value="🧠 Umum">🧠 Umum</option>
+              <option value="📜 Sejarah">📜 Sejarah</option>
             <option value="💰 Ekonomi">💰 Ekonomi</option>
             <option value="🌍 Geografi">🌍 Geografi</option>
             <option value="👥 Sosiologi">👥 Sosiologi</option>
@@ -1697,10 +1898,102 @@ const STORAGE_KEY_BANK  = 'tebakkata_bank';
 const STORAGE_KEY_LB    = 'tebakkata_lb_local';   // skor lokal browser ini
 const STORAGE_KEY_LB_CACHE = 'tebakkata_lb_cache'; // cache global dari Sheets
 const STORAGE_KEY_SHEETS = 'tebakkata_sheets_url';
-const STORAGE_VERSION   = 'tebakkata_v7'; // bump to force-reset old data
+const STORAGE_KEY_MAPEL  = 'tebakkata_mapel_custom';
+const STORAGE_VERSION   = 'tebakkata_v9'; // bump to force-reset old data
 const ADMIN_PASSWORD    = 'guruhebat'; // <-- ganti di sini
 
 const DEFAULT_WORDS = [
+  // 🧠 Umum
+  { word:"BATIK",               hint:"Kain tradisional bermotif khas Indonesia yang dibuat menggunakan teknik lilin panas sebelum proses pewarnaan.",   category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"BATIK",               hint:"Kain tradisional bermotif khas Indonesia yang dibuat menggunakan teknik lilin panas sebelum proses pewarnaan.",   category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"BATIK",               hint:"Kain tradisional bermotif khas Indonesia yang dibuat menggunakan teknik lilin panas sebelum proses pewarnaan.",   category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"ANGKLUNG",            hint:"Alat musik dari bambu yang dimainkan dengan cara digoyangkan sehingga menghasilkan nada tertentu.",               category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"ANGKLUNG",            hint:"Alat musik dari bambu yang dimainkan dengan cara digoyangkan sehingga menghasilkan nada tertentu.",               category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"ANGKLUNG",            hint:"Alat musik dari bambu yang dimainkan dengan cara digoyangkan sehingga menghasilkan nada tertentu.",               category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"WAYANG KULIT",        hint:"Pertunjukan tradisional menggunakan boneka dari kulit yang dimainkan di balik layar dengan cahaya lampu.",        category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"WAYANG KULIT",        hint:"Pertunjukan tradisional menggunakan boneka dari kulit yang dimainkan di balik layar dengan cahaya lampu.",        category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"WAYANG KULIT",        hint:"Pertunjukan tradisional menggunakan boneka dari kulit yang dimainkan di balik layar dengan cahaya lampu.",        category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"GAMELAN",             hint:"Ansambel musik tradisional yang terdiri dari gong, kenong, dan berbagai alat logam bernada.",                    category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"GAMELAN",             hint:"Ansambel musik tradisional yang terdiri dari gong, kenong, dan berbagai alat logam bernada.",                    category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"GAMELAN",             hint:"Ansambel musik tradisional yang terdiri dari gong, kenong, dan berbagai alat logam bernada.",                    category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"KERIS",               hint:"Senjata tradisional berlekuk yang juga dianggap sebagai benda pusaka dan karya seni budaya.",                    category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"KERIS",               hint:"Senjata tradisional berlekuk yang juga dianggap sebagai benda pusaka dan karya seni budaya.",                    category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"KERIS",               hint:"Senjata tradisional berlekuk yang juga dianggap sebagai benda pusaka dan karya seni budaya.",                    category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"RUMAH GADANG",        hint:"Rumah adat Minangkabau dengan atap melengkung menyerupai tanduk kerbau.",                                       category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"RUMAH GADANG",        hint:"Rumah adat Minangkabau dengan atap melengkung menyerupai tanduk kerbau.",                                       category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"RUMAH GADANG",        hint:"Rumah adat Minangkabau dengan atap melengkung menyerupai tanduk kerbau.",                                       category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"HONAI",               hint:"Rumah adat masyarakat Papua yang berbentuk bulat dengan atap jerami tebal.",                                     category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"HONAI",               hint:"Rumah adat masyarakat Papua yang berbentuk bulat dengan atap jerami tebal.",                                     category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"HONAI",               hint:"Rumah adat masyarakat Papua yang berbentuk bulat dengan atap jerami tebal.",                                     category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"BOROBUDUR",           hint:"Candi Buddha terbesar di dunia yang berada di Jawa Tengah dan menjadi tujuan wisata terkenal.",                  category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"BOROBUDUR",           hint:"Candi Buddha terbesar di dunia yang berada di Jawa Tengah dan menjadi tujuan wisata terkenal.",                  category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"BOROBUDUR",           hint:"Candi Buddha terbesar di dunia yang berada di Jawa Tengah dan menjadi tujuan wisata terkenal.",                  category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"PRAMBANAN",           hint:"Kompleks candi Hindu besar dengan menara tinggi yang berada tidak jauh dari Yogyakarta.",                        category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"PRAMBANAN",           hint:"Kompleks candi Hindu besar dengan menara tinggi yang berada tidak jauh dari Yogyakarta.",                        category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"PRAMBANAN",           hint:"Kompleks candi Hindu besar dengan menara tinggi yang berada tidak jauh dari Yogyakarta.",                        category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"MONAS",               hint:"Monumen tinggi di pusat Jakarta yang menjadi simbol perjuangan kemerdekaan Indonesia.",                          category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"MONAS",               hint:"Monumen tinggi di pusat Jakarta yang menjadi simbol perjuangan kemerdekaan Indonesia.",                          category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"MONAS",               hint:"Monumen tinggi di pusat Jakarta yang menjadi simbol perjuangan kemerdekaan Indonesia.",                          category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"RAJA AMPAT",          hint:"Kepulauan indah di Papua Barat yang terkenal dengan laut biru dan keanekaragaman bawah laut.",                   category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"RAJA AMPAT",          hint:"Kepulauan indah di Papua Barat yang terkenal dengan laut biru dan keanekaragaman bawah laut.",                   category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"RAJA AMPAT",          hint:"Kepulauan indah di Papua Barat yang terkenal dengan laut biru dan keanekaragaman bawah laut.",                   category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"BROMO",               hint:"Gunung berapi terkenal di Jawa Timur dengan pemandangan lautan pasir luas.",                                     category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"BROMO",               hint:"Gunung berapi terkenal di Jawa Timur dengan pemandangan lautan pasir luas.",                                     category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"BROMO",               hint:"Gunung berapi terkenal di Jawa Timur dengan pemandangan lautan pasir luas.",                                     category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"DANAU TOBA",          hint:"Danau vulkanik terbesar di Indonesia yang memiliki pulau besar di tengahnya.",                                   category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"DANAU TOBA",          hint:"Danau vulkanik terbesar di Indonesia yang memiliki pulau besar di tengahnya.",                                   category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"DANAU TOBA",          hint:"Danau vulkanik terbesar di Indonesia yang memiliki pulau besar di tengahnya.",                                   category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"KOMODO",              hint:"Reptil terbesar di dunia yang hidup alami di beberapa pulau di Nusa Tenggara Timur.",                            category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"KOMODO",              hint:"Reptil terbesar di dunia yang hidup alami di beberapa pulau di Nusa Tenggara Timur.",                            category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"KOMODO",              hint:"Reptil terbesar di dunia yang hidup alami di beberapa pulau di Nusa Tenggara Timur.",                            category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"ORANGUTAN",           hint:"Primata besar yang hidup di hutan Sumatra dan Kalimantan.",                                                      category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"ORANGUTAN",           hint:"Primata besar yang hidup di hutan Sumatra dan Kalimantan.",                                                      category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"ORANGUTAN",           hint:"Primata besar yang hidup di hutan Sumatra dan Kalimantan.",                                                      category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"RAFFLESIA",           hint:"Bunga raksasa yang terkenal karena ukurannya sangat besar dan memiliki bau khas.",                               category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"RAFFLESIA",           hint:"Bunga raksasa yang terkenal karena ukurannya sangat besar dan memiliki bau khas.",                               category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"RAFFLESIA",           hint:"Bunga raksasa yang terkenal karena ukurannya sangat besar dan memiliki bau khas.",                               category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"CENDRAWASIH",         hint:"Burung dengan bulu indah yang sering disebut burung surga dari Papua.",                                          category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"CENDRAWASIH",         hint:"Burung dengan bulu indah yang sering disebut burung surga dari Papua.",                                          category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"CENDRAWASIH",         hint:"Burung dengan bulu indah yang sering disebut burung surga dari Papua.",                                          category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"SAWAH TERASERING",    hint:"Bentuk lahan pertanian bertingkat yang sering ditemukan di daerah pegunungan.",                                  category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"SAWAH TERASERING",    hint:"Bentuk lahan pertanian bertingkat yang sering ditemukan di daerah pegunungan.",                                  category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"SAWAH TERASERING",    hint:"Bentuk lahan pertanian bertingkat yang sering ditemukan di daerah pegunungan.",                                  category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"PERAHU NELAYAN",      hint:"Kapal kecil yang digunakan masyarakat pesisir untuk mencari ikan di laut.",                                      category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"PERAHU NELAYAN",      hint:"Kapal kecil yang digunakan masyarakat pesisir untuk mencari ikan di laut.",                                      category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"PERAHU NELAYAN",      hint:"Kapal kecil yang digunakan masyarakat pesisir untuk mencari ikan di laut.",                                      category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"PASAR TRADISIONAL",   hint:"Tempat jual beli yang biasanya melibatkan tawar-menawar antara penjual dan pembeli.",                            category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"PASAR TRADISIONAL",   hint:"Tempat jual beli yang biasanya melibatkan tawar-menawar antara penjual dan pembeli.",                            category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"PASAR TRADISIONAL",   hint:"Tempat jual beli yang biasanya melibatkan tawar-menawar antara penjual dan pembeli.",                            category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"KAMPUNG HALAMAN",     hint:"Tempat asal seseorang yang biasanya memiliki kenangan masa kecil dan keluarga.",                                 category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"KAMPUNG HALAMAN",     hint:"Tempat asal seseorang yang biasanya memiliki kenangan masa kecil dan keluarga.",                                 category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"KAMPUNG HALAMAN",     hint:"Tempat asal seseorang yang biasanya memiliki kenangan masa kecil dan keluarga.",                                 category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"MUDIK",               hint:"Tradisi pulang ke daerah asal untuk berkumpul bersama keluarga pada waktu tertentu.",                            category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"MUDIK",               hint:"Tradisi pulang ke daerah asal untuk berkumpul bersama keluarga pada waktu tertentu.",                            category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"MUDIK",               hint:"Tradisi pulang ke daerah asal untuk berkumpul bersama keluarga pada waktu tertentu.",                            category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"GOTONG ROYONG",       hint:"Kebiasaan bekerja bersama secara sukarela untuk kepentingan bersama di masyarakat.",                             category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"GOTONG ROYONG",       hint:"Kebiasaan bekerja bersama secara sukarela untuk kepentingan bersama di masyarakat.",                             category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"GOTONG ROYONG",       hint:"Kebiasaan bekerja bersama secara sukarela untuk kepentingan bersama di masyarakat.",                             category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"LAYANG LAYANG",       hint:"Mainan yang diterbangkan di udara menggunakan benang dan sering dimainkan di lapangan terbuka.",                  category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"LAYANG LAYANG",       hint:"Mainan yang diterbangkan di udara menggunakan benang dan sering dimainkan di lapangan terbuka.",                  category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"LAYANG LAYANG",       hint:"Mainan yang diterbangkan di udara menggunakan benang dan sering dimainkan di lapangan terbuka.",                  category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"SARUNG",              hint:"Kain panjang berbentuk tabung yang sering dipakai santai atau saat kegiatan keagamaan.",                         category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"SARUNG",              hint:"Kain panjang berbentuk tabung yang sering dipakai santai atau saat kegiatan keagamaan.",                         category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"SARUNG",              hint:"Kain panjang berbentuk tabung yang sering dipakai santai atau saat kegiatan keagamaan.",                         category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"KOPI GAYO",           hint:"Kopi terkenal dari Aceh yang memiliki aroma kuat dan banyak diekspor ke luar negeri.",                           category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"KOPI GAYO",           hint:"Kopi terkenal dari Aceh yang memiliki aroma kuat dan banyak diekspor ke luar negeri.",                           category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"KOPI GAYO",           hint:"Kopi terkenal dari Aceh yang memiliki aroma kuat dan banyak diekspor ke luar negeri.",                           category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"TENUN IKAT",          hint:"Kain tradisional yang dibuat dengan teknik mengikat benang sebelum proses pewarnaan.",                           category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"TENUN IKAT",          hint:"Kain tradisional yang dibuat dengan teknik mengikat benang sebelum proses pewarnaan.",                           category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"TENUN IKAT",          hint:"Kain tradisional yang dibuat dengan teknik mengikat benang sebelum proses pewarnaan.",                           category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"LOMBOK",              hint:"Pulau wisata terkenal dengan pantai indah dan Gunung Rinjani yang menjulang tinggi.",                            category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"LOMBOK",              hint:"Pulau wisata terkenal dengan pantai indah dan Gunung Rinjani yang menjulang tinggi.",                            category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"LOMBOK",              hint:"Pulau wisata terkenal dengan pantai indah dan Gunung Rinjani yang menjulang tinggi.",                            category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"KALIMANTAN",          hint:"Pulau besar di Indonesia yang dikenal dengan hutan hujan tropis yang luas.",                                     category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"KALIMANTAN",          hint:"Pulau besar di Indonesia yang dikenal dengan hutan hujan tropis yang luas.",                                     category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"KALIMANTAN",          hint:"Pulau besar di Indonesia yang dikenal dengan hutan hujan tropis yang luas.",                                     category:"🧠 Umum", kelas:"Kelas XII" },
+  { word:"NUSANTARA",           hint:"Istilah yang digunakan untuk menggambarkan seluruh kepulauan wilayah Indonesia.",                                category:"🧠 Umum", kelas:"Kelas X" },
+  { word:"NUSANTARA",           hint:"Istilah yang digunakan untuk menggambarkan seluruh kepulauan wilayah Indonesia.",                                category:"🧠 Umum", kelas:"Kelas XI" },
+  { word:"NUSANTARA",           hint:"Istilah yang digunakan untuk menggambarkan seluruh kepulauan wilayah Indonesia.",                                category:"🧠 Umum", kelas:"Kelas XII" },
   // 📜 Sejarah
   { word:"PERGERAKAN NASIONAL",      hint:"Gerakan organisasi modern menuju kemerdekaan Indonesia",                    category:"📜 Sejarah",  kelas:"Kelas XI" },
   { word:"IMPERIALISME BARAT",       hint:"Kebijakan negara Eropa memperluas kekuasaan politik dan ekonomi",          category:"📜 Sejarah",  kelas:"Kelas XI" },
@@ -2288,6 +2581,58 @@ function closeModal(id) {
     document.getElementById('adminPwInput').value = '';
     document.getElementById('adminPwErr').style.display = 'none';
   }
+  if (id === 'adminModal') {
+    refreshHomeMapelSelect();
+    refreshLbFilterRow();
+  }
+}
+
+function refreshLbFilterRow() {
+  const custom = getCustomMapel();
+  const row = document.getElementById('lbFilterRow');
+  if (!row) return;
+  const defaultVals = ['🧠 Umum','📜 Sejarah','💰 Ekonomi','🌍 Geografi','👥 Sosiologi','⚛️ Fisika','🧪 Kimia','🧬 Biologi'];
+  // Hapus tombol custom lama
+  Array.from(row.querySelectorAll('button[data-custom]')).forEach(b => b.remove());
+  // Tambah tombol untuk mapel custom — hanya tampil saat mode lokal
+  if (_lbMode === 'lokal') {
+    custom.forEach(m => {
+      if (defaultVals.includes(m.value)) return;
+      const btn = document.createElement('button');
+      btn.className = 'lb-filter-btn';
+      btn.setAttribute('data-custom', '1');
+      btn.setAttribute('data-mapel', m.value);
+      btn.textContent = m.label;
+      btn.onclick = () => setLbFilter(m.value);
+      row.appendChild(btn);
+    });
+  }
+  // Update active state
+  document.querySelectorAll('.lb-filter-btn').forEach(btn => {
+    const bm = btn.getAttribute('data-mapel') ?? (btn.getAttribute('onclick') || '');
+    const isActive = _lbFilter === '' ? bm === '' || bm.includes("''") : bm === _lbFilter || bm.includes(`'${_lbFilter}'`);
+    btn.classList.toggle('active', isActive);
+  });
+}
+
+function refreshHomeMapelSelect() {
+  const custom = getCustomMapel();
+  const sel = document.getElementById('mapelSelect');
+  if (!sel) return;
+  const defaultVals = ['🧠 Umum','📜 Sejarah','💰 Ekonomi','🌍 Geografi','👥 Sosiologi','⚛️ Fisika','🧪 Kimia','🧬 Biologi'];
+  // Hapus opsi custom lama
+  Array.from(sel.options).forEach(o => {
+    if (o.value && !defaultVals.includes(o.value)) o.remove();
+  });
+  // Tambahkan custom mapel baru
+  custom.forEach(m => {
+    if (!sel.querySelector(`option[value="${m.value}"]`)) {
+      const o = document.createElement('option');
+      o.value = m.value; o.textContent = m.label;
+      sel.appendChild(o);
+    }
+  });
+  refreshLbFilterRow();
 }
 
 // ═══════════════════════════════════════════
@@ -2352,13 +2697,31 @@ function onNameInput() {
   const kelas = document.getElementById('kelasSelect').value;
   const mapel = document.getElementById('mapelSelect').value;
   const errEl = document.getElementById('nameErr');
+  const soalErrEl = document.getElementById('soalErr');
   const isBanned = val.length > 0 && containsBannedWord(val);
+
   if (isBanned) {
     errEl.style.display = 'block';
   } else {
     errEl.style.display = 'none';
   }
-  document.getElementById('btnStart').disabled = val.length < 1 || !kelas || !mapel || isBanned;
+
+  // Cek ketersediaan soal jika kelas & mapel sudah dipilih
+  let soalTersedia = true;
+  if (kelas && mapel) {
+    const jumlah = loadWords().filter(w => w.category === mapel && (w.kelas||'') === kelas).length;
+    if (jumlah === 0) {
+      soalTersedia = false;
+      soalErrEl.innerHTML = '📭 Belum ada soal untuk ' + mapel + ' · ' + kelas + '.<br>Tambahkan soal dulu di Kelola Soal.';
+      soalErrEl.style.display = 'block';
+    } else {
+      soalErrEl.style.display = 'none';
+    }
+  } else {
+    soalErrEl.style.display = 'none';
+  }
+
+  document.getElementById('btnStart').disabled = val.length < 1 || !kelas || !mapel || isBanned || !soalTersedia;
 }
 
 function checkStartable() {
@@ -2376,31 +2739,42 @@ function doQuit() {
 }
 
 let _lbFilter = '';
-let _lbMode = 'global'; // 'global' | 'lokal'
+let _lbMode = 'lokal'; // default: lokal
 
 function setLbMode(mode) {
   _lbMode = mode;
-  ['lbTabGlobal','lbTabGlobalM'].forEach(id => {
-    const el = document.getElementById(id); if(el) el.classList.toggle('active', mode === 'global');
-  });
   ['lbTabLokal','lbTabLokalM'].forEach(id => {
     const el = document.getElementById(id); if(el) el.classList.toggle('active', mode === 'lokal');
   });
+  ['lbTabGlobal','lbTabGlobalM'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.classList.toggle('active', mode === 'global');
+  });
+
+  // Toggle panel corner class
+  const panel = document.querySelector('.lb-panel');
+  if (panel) {
+    panel.classList.toggle('mode-lokal', mode === 'lokal');
+    panel.classList.toggle('mode-global', mode === 'global');
+  }
 
   // Update action button
   const btn = document.getElementById('lbActionBtn');
+  const exportBtn = document.getElementById('lbExportBtn');
   if (mode === 'global') {
     btn.textContent = '↺ Refresh';
     btn.style.color = '';
     btn.style.borderColor = '';
+    if (exportBtn) exportBtn.style.display = 'none';
   } else {
     btn.textContent = '🗑 Reset';
     btn.style.color = 'var(--danger)';
     btn.style.borderColor = 'rgba(248,113,113,0.3)';
+    if (exportBtn) exportBtn.style.display = '';
   }
 
 
   renderLB();
+  refreshLbFilterRow();
 }
 
 function lbAction() {
@@ -2414,7 +2788,10 @@ function lbAction() {
 function setLbFilter(mapel) {
   _lbFilter = mapel;
   document.querySelectorAll('.lb-filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${mapel}'`));
+    // Cek dari data-mapel attribute atau onclick text
+    const btnMapel = btn.getAttribute('data-mapel') ?? (btn.getAttribute('onclick') || '');
+    const isActive = mapel === '' ? btnMapel === '' || btnMapel.includes("''") : btnMapel.includes(`'${mapel}'`) || btn.getAttribute('data-mapel') === mapel;
+    btn.classList.toggle('active', isActive);
   });
   renderLB();
 }
@@ -2449,12 +2826,16 @@ function renderLBData(lb) {
   `).join('');
 }
 
+let _lbRenderToken = 0;
+
 async function renderLB() {
   const el = document.getElementById('lbList');
   const statusEl = document.getElementById('lbStatusText');
+  const token = ++_lbRenderToken;
 
   if (_lbMode === 'lokal') {
     const local = loadLocalLB();
+    if (token !== _lbRenderToken) return;
     statusEl.textContent = '🖥️ Skor Lokal — tersimpan di browser ini';
     renderLBData(local);
     return;
@@ -2464,6 +2845,7 @@ async function renderLB() {
   el.innerHTML = '<div class="lb-empty" style="opacity:0.5;">⏳ Memuat skor global...</div>';
   statusEl.textContent = '';
   const online = await fetchLBFromSheets();
+  if (token !== _lbRenderToken) return; // mode sudah berganti, buang hasil ini
   if (online !== null) {
     statusEl.textContent = '🌐 Skor Global — semua pemain dari semua perangkat';
     renderLBData(online);
@@ -2472,6 +2854,46 @@ async function renderLB() {
     const cached = loadGlobalCache();
     renderLBData(cached);
   }
+}
+
+function exportLBtoExcel() {
+  const lb = loadLocalLB();
+  if (!lb.length) {
+    alert('Belum ada data skor lokal untuk diekspor.');
+    return;
+  }
+
+  // Buat data rows
+  const rows = [['No', 'Nama', 'Kelas', 'Mata Pelajaran', 'Skor', 'Tanggal']];
+  lb.forEach((r, i) => {
+    rows.push([
+      i + 1,
+      r.name || '',
+      r.kelas || '',
+      r.mapel || '',
+      r.score || 0,
+      r.date || ''
+    ]);
+  });
+
+  // Buat worksheet manual tanpa library eksternal (CSV → Excel compatible)
+  const tgl = new Date().toISOString().slice(0, 10);
+  const csvContent = rows.map(row =>
+    row.map(cell => {
+      const s = String(cell);
+      // Quote kalau ada koma atau kutip
+      return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s;
+    }).join(',')
+  ).join('\r\n');
+
+  // BOM supaya Excel baca UTF-8 dengan benar (emoji & huruf Indonesia)
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tebakkata-skor-lokal-${tgl}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 function confirmResetLB() { showModal('resetModal'); }
@@ -2528,32 +2950,54 @@ function selectEmoji(e) {}
 
 
 function openAdminPanel() {
+  populateMapelDropdowns();
   renderAdminWords();
   switchTab('daftar');
   showModal('adminModal');
 }
 
 function switchTab(tab) {
-  ['daftar','bank'].forEach(t => {
+  ['daftar','arsip'].forEach(t => {
     const panel = document.getElementById('tabPanel' + t.charAt(0).toUpperCase() + t.slice(1));
     const btn   = document.getElementById('tab'      + t.charAt(0).toUpperCase() + t.slice(1));
     if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
     if (btn)   btn.classList.toggle('active', t === tab);
   });
-  if (tab === 'bank') renderBank();
+  if (tab === 'arsip') renderBank();
 }
 
 function renderAdminWords() {
   let words = loadWords();
-  const filterKelas = (document.getElementById('daftarFilterKelas')||{}).value || '';
-  const filterMapel = (document.getElementById('daftarFilterMapel')||{}).value || '';
-  if (filterKelas) words = words.filter(w => (w.kelas||'') === filterKelas);
-  if (filterMapel) words = words.filter(w => w.category === filterMapel);
+  const _fkEl = document.getElementById('daftarFilterKelas');
+  const _fmEl = document.getElementById('daftarFilterMapel');
+  const filterKelas = _fkEl ? _fkEl.value : '';
+  const filterMapel = _fmEl ? _fmEl.value : '';
+  if (filterKelas) words = words.filter(w => {
+    const k = (w.kelas||'').trim();
+    return k === filterKelas.trim();
+  });
+  if (filterMapel) words = words.filter(w => {
+    const m = (w.category||'').trim();
+    return m === filterMapel.trim();
+  });
 
   document.getElementById('wordCount').textContent = words.length;
   const el    = document.getElementById('adminWordList');
   const empty = document.getElementById('daftarEmpty');
-  if (!words.length) { el.innerHTML=''; empty.style.display='block'; return; }
+  // Kalau belum ada filter aktif, jangan tampilkan soal
+  if (!filterKelas && !filterMapel) {
+    el.innerHTML = '';
+    empty.textContent = 'Pilih kelas atau mata pelajaran untuk menampilkan soal.';
+    empty.style.display = 'block';
+    document.getElementById('wordCount').textContent = '–';
+    return;
+  }
+  if (!words.length) {
+    el.innerHTML='';
+    empty.textContent = 'Tidak ada soal untuk filter ini.';
+    empty.style.display='block';
+    return;
+  }
   empty.style.display = 'none';
 
   // Use original indices for edit/archive actions
@@ -2599,10 +3043,12 @@ function setBankFilter(cat) {} // no-op, replaced by dropdowns
 
 function renderBank() {
   let bank = loadBank();
-  const filterKelas = (document.getElementById('bankFilterKelas')||{}).value || '';
-  const filterMapel = (document.getElementById('bankFilterMapel')||{}).value || '';
-  if (filterKelas) bank = bank.filter(w => (w.kelas||'') === filterKelas);
-  if (filterMapel) bank = bank.filter(w => w.category === filterMapel);
+  const _fkEl = document.getElementById('bankFilterKelas');
+  const _fmEl = document.getElementById('bankFilterMapel');
+  const filterKelas = _fkEl ? _fkEl.value : '';
+  const filterMapel = _fmEl ? _fmEl.value : '';
+  if (filterKelas) bank = bank.filter(w => (w.kelas||'').trim() === filterKelas.trim());
+  if (filterMapel) bank = bank.filter(w => (w.category||'').trim() === filterMapel.trim());
   const sorted = [...bank].sort((a,b) => (a.category||'').localeCompare(b.category||'') || a.word.localeCompare(b.word));
 
   document.getElementById('bankCount').textContent = loadBank().length;
@@ -2663,6 +3109,167 @@ function adminRestoreWord(wordKey) {
 }
 
 let _pendingDeleteWord = null;
+// ═══ EMOJI PICKER ═══
+const EMOJI_OPTIONS = [
+  '📘','📚','✏️','🧠','🔢','📐','➗','🔬','🧪','🧬',
+  '🌍','🗺️','🏛️','⚖️','💰','📜','🗣️','🎨','🎭','🎼',
+  '🎵','🏃‍♂️','⚽','🏀','🏸','🏐','🧘‍♂️','💻','🖥️','🤖',
+  '🇮🇩','🇬🇧','🇸🇦','🇯🇵','🇨🇳','🇰🇷','🇩🇪','🇫🇷','🇪🇸',
+  '📐','📏','⚗️','🌱','💡','📊','🔭','🧮','📝','🧩','💬','🎤'
+];
+
+function buildEmojiPicker() {}  // legacy, tidak dipakai
+
+function openEmojiPopup() {
+  const grid = document.getElementById('emojiPickerGrid');
+  const cur  = document.getElementById('newMapelEmoji').value;
+  grid.innerHTML = '';
+  EMOJI_OPTIONS.forEach(em => {
+    const btn = document.createElement('button');
+    btn.textContent = em;
+    btn.style.cssText = 'background:' + (em === cur ? 'rgba(56,189,248,0.25)' : 'var(--surface3)') + ';border:1px solid ' + (em === cur ? 'rgba(56,189,248,0.5)' : 'var(--border)') + ';border-radius:8px;width:100%;aspect-ratio:1;font-size:1.2rem;cursor:pointer;transition:all 0.12s;display:flex;align-items:center;justify-content:center;';
+    btn.onclick = () => {
+      document.getElementById('newMapelEmoji').value = em;
+      document.getElementById('btnPickEmoji').textContent = em;
+      closeEmojiPopup();
+    };
+    grid.appendChild(btn);
+  });
+  document.getElementById('emojiPopup').style.display = 'flex';
+}
+
+function closeEmojiPopup() {
+  document.getElementById('emojiPopup').style.display = 'none';
+}
+
+function onAwMapelChange(sel) {
+  if (sel.value === '__new__') {
+    document.getElementById('newMapelForm').style.display = 'block';
+    document.getElementById('newMapelEmoji').value = '';
+    document.getElementById('newMapelNama').value = '';
+    document.getElementById('btnPickEmoji').textContent = '➕';
+    document.getElementById('newMapelErr').style.display = 'none';
+    setTimeout(() => document.getElementById('newMapelNama').focus(), 50);
+  } else {
+    document.getElementById('newMapelForm').style.display = 'none';
+  }
+}
+
+function getCustomMapel() {
+  try { const s = localStorage.getItem(STORAGE_KEY_MAPEL); return s ? JSON.parse(s) : []; } catch(e) { return []; }
+}
+function saveCustomMapel(list) {
+  try { localStorage.setItem(STORAGE_KEY_MAPEL, JSON.stringify(list)); } catch(e) {}
+}
+
+function populateMapelDropdowns() {
+  const custom = getCustomMapel();
+  const selects = ['awMapel', 'daftarFilterMapel', 'bankFilterMapel', 'editMapel'];
+  const defaultOpts = [
+    {v:'🧠 Umum',l:'🧠 Umum'},{v:'📜 Sejarah',l:'📜 Sejarah'},{v:'💰 Ekonomi',l:'💰 Ekonomi'},
+    {v:'🌍 Geografi',l:'🌍 Geografi'},{v:'👥 Sosiologi',l:'👥 Sosiologi'},
+    {v:'⚛️ Fisika',l:'⚛️ Fisika'},{v:'🧪 Kimia',l:'🧪 Kimia'},
+    {v:'🧬 Biologi',l:'🧬 Biologi'}
+  ];
+  selects.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    // Hapus opsi custom lama (bukan default, bukan placeholder, bukan __new__)
+    Array.from(sel.options).forEach(o => {
+      if (!['','__new__'].includes(o.value) && !defaultOpts.find(d => d.v === o.value)) o.remove();
+    });
+    // Tambahkan custom mapel setelah Biologi, sebelum opsi "+ Tambah"
+    const addBtn = sel.querySelector('option[value="__new__"]');
+    custom.forEach(m => {
+      if (!sel.querySelector(`option[value="${m.value}"]`)) {
+        const o = document.createElement('option');
+        o.value = m.value; o.textContent = m.label;
+        if (addBtn) sel.insertBefore(o, addBtn);
+        else sel.appendChild(o);
+      }
+    });
+    sel.value = cur;
+  });
+}
+
+function saveNewMapel() {
+  const emoji = document.getElementById('newMapelEmoji').value.trim();
+  const nama  = document.getElementById('newMapelNama').value.trim();
+  const errEl = document.getElementById('newMapelErr');
+  if (!emoji) { errEl.textContent = 'Pilih emoji dulu.'; errEl.style.display='block'; return; }
+  if (!nama)  { errEl.textContent = 'Nama mapel kosong.'; errEl.style.display='block'; return; }
+  const val = emoji + ' ' + nama;
+  const custom = getCustomMapel();
+  if (custom.find(m => m.value === val)) { errEl.textContent = 'Mapel sudah ada.'; errEl.style.display='block'; return; }
+  custom.push({ value: val, label: val });
+  saveCustomMapel(custom);
+  populateMapelDropdowns();
+  // Pilih mapel baru di dropdown
+  const sel = document.getElementById('awMapel');
+  sel.value = val;
+  document.getElementById('newMapelForm').style.display = 'none';
+  errEl.style.display = 'none';
+}
+
+// ═══ UNDUH & PULIHKAN ═══
+function unduhSoalLokal() {
+  const words  = loadWords();
+  const bank   = (() => { try { const s = localStorage.getItem(STORAGE_KEY_BANK); return s ? JSON.parse(s) : []; } catch(e) { return []; } })();
+  const mapel  = getCustomMapel();
+  const blob = new Blob([JSON.stringify({ words, bank, mapel }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const tgl = new Date().toISOString().slice(0,10);
+  a.download = 'tebakkata-soal-' + tgl + '.json';
+  a.click();
+}
+
+function pulihkanSoalLokal(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.words || !Array.isArray(data.words)) throw new Error('Format tidak valid');
+      localStorage.setItem(STORAGE_KEY_WORDS, JSON.stringify(data.words));
+      if (data.bank) localStorage.setItem(STORAGE_KEY_BANK, JSON.stringify(data.bank));
+      if (data.mapel) saveCustomMapel(data.mapel);
+      populateMapelDropdowns();
+      renderAdminWords();
+      const msg = document.getElementById('restoreMsgInline');
+      msg.textContent = '✓ ' + data.words.length + ' soal berhasil dipulihkan!';
+      msg.style.color = 'var(--success)';
+      msg.style.display = 'block';
+      setTimeout(() => msg.style.display = 'none', 4000);
+    } catch(err) {
+      const msg = document.getElementById('restoreMsgInline');
+      msg.style.color = 'var(--danger)';
+      msg.textContent = '✗ File tidak valid.';
+      msg.style.display = 'block';
+      setTimeout(() => { msg.style.display = 'none'; msg.style.color = 'var(--success)'; }, 4000);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function confirmResetData() {
+  showModal('resetDataModal');
+}
+
+function doResetData() {
+  localStorage.removeItem(STORAGE_KEY_WORDS);
+  localStorage.removeItem(STORAGE_KEY_BANK);
+  localStorage.removeItem(STORAGE_KEY_MAPEL);
+  localStorage.removeItem(STORAGE_KEY_LB);
+  localStorage.removeItem(STORAGE_KEY_LB_CACHE);
+  localStorage.removeItem(STORAGE_VERSION);
+  closeModal('resetDataModal');
+  location.reload();
+}
+
 function adminConfirmDelete(wordKey) {
   _pendingDeleteWord = wordKey;
   document.getElementById('deleteModalMsg').textContent = '"' + wordKey + '" akan dihapus permanen dari bank soal. Tindakan ini tidak bisa dibatalkan.';
@@ -2737,13 +3344,19 @@ function adminAddWord() {
   const words = loadWords();
   words.push({ word, hint, category: mapel, kelas });
   saveWords(words);
+
+  // Set filter daftar ke kelas+mapel soal baru supaya langsung terlihat
+  const fk = document.getElementById('daftarFilterKelas');
+  const fm = document.getElementById('daftarFilterMapel');
+  if (fk) fk.value = kelas;
+  if (fm) fm.value = mapel;
+
   renderAdminWords();
   checkStartable();
 
   document.getElementById('awWord').value='';
   document.getElementById('awHint').value='';
-  document.getElementById('awKelas').value='';
-  document.getElementById('awMapel').value='';
+  // Pertahankan kelas & mapel supaya guru bisa tambah soal berikutnya ke mapel yang sama
   const lenEl = document.getElementById('awWordLen');
   if (lenEl) { lenEl.textContent='0 / 30'; lenEl.style.color='var(--text-dim)'; }
   okEl.textContent='✓ Soal berhasil ditambahkan ke Daftar Soal!'; okEl.style.display='block';
@@ -2843,7 +3456,7 @@ function loadWord() {
   updateCreature();
   document.getElementById('catBadge').textContent = entry.category;
   document.getElementById('playerNameDisplay').textContent = state.playerName;
-  document.getElementById('hintBox').textContent = '💡 ' + entry.hint;
+  document.getElementById('hintBoxText').textContent = entry.hint;
   renderWord();
   renderKeyboard();
   updateProgress();
@@ -3096,6 +3709,7 @@ function checkWin() {
   state.score += bonus;
   state.streak++;
   updateStatUI();
+  playWordClear();
   document.getElementById('creature').classList.add('win-anim');
   spawnBigParticles();
   setTimeout(() => showGameOverlay(true, bonus), 700);
@@ -3237,6 +3851,26 @@ function showCaraMain() { showModal('caraMainModal'); }
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
+function playWordClear() {
+  try {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    const t = audioCtx.currentTime;
+    // Tring — dua nada bell pendek naik
+    [[1318, 0, 0.25], [1760, 0.12, 0.35], [2637, 0.22, 0.45]].forEach(([freq, delay, dur]) => {
+      const osc  = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + delay);
+      gain.gain.setValueAtTime(0, t + delay);
+      gain.gain.linearRampToValueAtTime(0.22, t + delay + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + delay + dur);
+      osc.start(t + delay);
+      osc.stop(t + delay + dur + 0.05);
+    });
+  } catch(e) {}
+}
+
 function playVictory() {
   try {
     if (!audioCtx) audioCtx = new AudioCtx();
@@ -3344,6 +3978,7 @@ document.addEventListener('keydown', e => {
     closeModal('adminAuthModal');
     closeModal('adminModal');
     closeModal('resetModal');
+    closeModal('resetDataModal');
     closeModal('infoModal');
     closeModal('deleteModal');
     closeModal('quitModal');
@@ -3352,7 +3987,7 @@ document.addEventListener('keydown', e => {
 });
 
 // Close modal on bg click
-['adminAuthModal','adminModal','resetModal','infoModal','caraMainModal','deleteModal','quitModal','editModal'].forEach(id => {
+['adminAuthModal','adminModal','resetModal','resetDataModal','infoModal','caraMainModal','deleteModal','quitModal','editModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', e => {
     if (e.target === document.getElementById(id)) closeModal(id);
   });
@@ -3402,14 +4037,41 @@ async function fetchLBFromSheets() {
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
-// Version migration: if this is a new version, reseed words to defaults
+// Version migration: merge new DEFAULT_WORDS into existing, preserve custom soal
 if (!localStorage.getItem(STORAGE_VERSION)) {
-  localStorage.setItem(STORAGE_KEY_WORDS, JSON.stringify(DEFAULT_WORDS));
-  localStorage.setItem(STORAGE_KEY_BANK, JSON.stringify([]));
+  try {
+    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY_WORDS) || '[]');
+    // Build set of existing keys to avoid duplicates
+    const existingKeys = new Set(existing.map(w => w.word + '|' + (w.category||'') + '|' + (w.kelas||'')));
+    const toAdd = DEFAULT_WORDS.filter(w => !existingKeys.has(w.word + '|' + (w.category||'') + '|' + (w.kelas||'')));
+    // New default words go first, then existing custom
+    const merged = [...DEFAULT_WORDS, ...existing.filter(w => {
+      // keep custom (non-default) words
+      const key = w.word + '|' + (w.category||'') + '|' + (w.kelas||'');
+      return !new Set(DEFAULT_WORDS.map(d => d.word + '|' + (d.category||'') + '|' + (d.kelas||''))).has(key);
+    })];
+    localStorage.setItem(STORAGE_KEY_WORDS, JSON.stringify(merged));
+  } catch(e) {
+    localStorage.setItem(STORAGE_KEY_WORDS, JSON.stringify(DEFAULT_WORDS));
+  }
   localStorage.setItem(STORAGE_VERSION, '1');
 }
 renderLB();
 checkStartable();
+refreshHomeMapelSelect();
+// Set initial panel corner class
+const _initPanel = document.querySelector('.lb-panel');
+if (_initPanel) _initPanel.classList.add('mode-lokal');
 </script>
+<!-- Emoji Popup -->
+<div id="emojiPopup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;" onclick="if(event.target===this)closeEmojiPopup();">
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:16px;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;color:var(--accent2);">PILIH EMOJI</div>
+      <button onclick="closeEmojiPopup()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1rem;line-height:1;">✕</button>
+    </div>
+    <div id="emojiPickerGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:220px;overflow-y:auto;padding-right:2px;"></div>
+  </div>
+</div>
 </body>
 </html>
