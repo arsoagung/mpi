@@ -2670,11 +2670,11 @@ function normalizeName(str) {
 
 function containsBannedWord(name) {
   const normalized = normalizeName(name);
-  // Cek tiap token (kata per kata) dan keseluruhan string tanpa spasi
-  const tokens = normalized.split(/\s+/).concat([normalized.replace(/\s+/g,'')]);
-  return BANNED_WORDS.some(banned =>
-    tokens.some(token => token === banned || token.includes(banned))
-  );
+  // Whole-word match saja — "asu" blok, tapi "Sasuke"/"Barasuara" lolos
+  return BANNED_WORDS.some(banned => {
+    const re = new RegExp('(?<![a-z])' + banned + '(?![a-z])', 'i');
+    return re.test(normalized);
+  });
 }
 
 // ═══════════════════════════════════════════
@@ -2819,7 +2819,7 @@ function renderLBData(lb) {
       <div class="lb-rank">${medals[i] || (i+1)}</div>
       <div class="lb-name">
         ${escHtml(row.name)}
-        <div class="lb-meta">${escHtml(row.kelas||'')}${row.kelas && row.mapel ? ' · ' : ''}${escHtml(row.mapel||'')}${row.date ? ' · ' + formatTanggal(row.date) : ''}</div>
+        <div class="lb-meta">${escHtml(row.kelas||'')}${row.kelas && row.mapel ? ' · ' : ''}${escHtml(row.mapel||'')}</div>
       </div>
       <div class="lb-score">${row.score}</div>
     </div>
