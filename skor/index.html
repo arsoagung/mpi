@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Astronimation Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #F0F2FA;
+  --white:     #FFFFFF;
+  --indigo:    #5B6CF9;
+  --indigo2:   #7C8BFA;
+  --indigo-bg: #EEF0FE;
+  --coral:     #F87171;
+  --coral-bg:  #FEF2F2;
+  --green:     #34D399;
+  --green-bg:  #ECFDF5;
+  --amber:     #FBBF24;
+  --text:      #1A1F36;
+  --text2:     #6B7280;
+  --text3:     #9CA3AF;
+  /* Shadow keungu-biruan tipis — tidak ada border */
+  --shadow-sm: 0 2px 8px rgba(91,108,249,0.08), 0 1px 3px rgba(91,108,249,0.04);
+  --shadow:    0 4px 20px rgba(91,108,249,0.10), 0 1px 6px rgba(91,108,249,0.06);
+  --shadow-lg: 0 12px 40px rgba(91,108,249,0.14), 0 4px 16px rgba(91,108,249,0.08);
+  --shadow-xl: 0 24px 60px rgba(91,108,249,0.16), 0 8px 24px rgba(91,108,249,0.10);
+  --radius:    18px;
+  --font:      'Plus Jakarta Sans', sans-serif;
+  --sidebar-w: 220px;
+}
+
+html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font); }
+
+/* ── LOGIN ── */
+#loginScreen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); z-index: 100;
+}
+.login-wrap { width: 420px; animation: fadeUp 0.5s ease both; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.login-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.login-dot {
+  width: 34px; height: 34px; background: var(--indigo);
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; color: white; font-weight: 800;
+  box-shadow: 0 4px 12px rgba(91,108,249,0.35);
+}
+.login-brand { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+
+.login-card {
+  background: var(--white); border-radius: 24px;
+  padding: 40px; box-shadow: var(--shadow-xl);
+}
+.login-title {
+  font-size: 1.8rem; font-weight: 400;
+  color: var(--text); letter-spacing: -0.03em;
+  margin-bottom: 6px;
+  font-family: 'Instrument Serif', serif; font-style: italic;
+}
+.login-sub { font-size: 0.84rem; color: var(--text2); margin-bottom: 28px; line-height: 1.55; }
+.field-label { font-size: 0.72rem; font-weight: 700; color: var(--text2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+.field-input {
+  width: 100%; background: var(--bg); border: none;
+  border-radius: 12px; padding: 13px 16px;
+  font-family: var(--font); font-size: 0.9rem; color: var(--text);
+  outline: none; transition: all 0.2s; margin-bottom: 20px;
+  box-shadow: inset 0 1px 3px rgba(91,108,249,0.06);
+}
+.field-input:focus { background: white; box-shadow: 0 0 0 3px rgba(91,108,249,0.15), var(--shadow-sm); }
+.btn-primary {
+  width: 100%; padding: 14px; background: var(--indigo); color: white;
+  border: none; border-radius: 12px; font-family: var(--font);
+  font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; box-shadow: 0 6px 20px rgba(91,108,249,0.35);
+}
+.btn-primary:hover { background: #4B5CF0; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(91,108,249,0.45); }
+.login-err { font-size: 0.78rem; color: var(--coral); text-align: center; margin-top: 12px; display: none; font-weight: 600; }
+
+/* ── APP SHELL ── */
+#mainScreen { display: none; min-height: 100vh; }
+
+.app-shell {
+  display: flex; min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--white);
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 40; padding: 24px 16px;
+}
+
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 8px 24px;
+  border-bottom: none;
+  margin-bottom: 8px;
+}
+.sidebar-dot {
+  width: 32px; height: 32px; background: var(--indigo);
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; color: white; font-weight: 800;
+  box-shadow: 0 4px 12px rgba(91,108,249,0.3); flex-shrink: 0;
+}
+.sidebar-name {
+  font-size: 0.82rem; font-weight: 800; color: var(--text);
+  letter-spacing: -0.02em; line-height: 1.2;
+}
+
+.sidebar-section {
+  font-size: 0.62rem; font-weight: 700; color: var(--text3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0 10px; margin: 16px 0 6px;
+}
+
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  cursor: pointer; transition: all 0.18s;
+  font-size: 0.82rem; font-weight: 600; color: var(--text2);
+  margin-bottom: 2px; user-select: none;
+}
+.sidebar-item:hover { background: var(--indigo-bg); color: var(--indigo); }
+.sidebar-item.active {
+  background: var(--indigo); color: white;
+  box-shadow: 0 4px 12px rgba(91,108,249,0.3);
+}
+.sidebar-item .item-emoji { font-size: 0.9rem; }
+.sidebar-item .item-badge {
+  margin-left: auto; font-size: 0.55rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px;
+  background: rgba(255,255,255,0.2); color: white;
+  letter-spacing: 0.05em;
+}
+.sidebar-item:not(.active) .item-badge {
+  background: var(--bg); color: var(--text3);
+}
+.sidebar-item.soon { opacity: 0.5; cursor: not-allowed; }
+.sidebar-item.soon:hover { background: transparent; color: var(--text2); }
+
+.sidebar-footer {
+  margin-top: auto; padding-top: 16px;
+  border-top: 1px solid rgba(91,108,249,0.08);
+}
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  background: var(--bg);
+}
+.sidebar-avatar {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--indigo); display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; color: white; font-weight: 700; flex-shrink: 0;
+}
+.sidebar-uname { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+.sidebar-urole { font-size: 0.65rem; color: var(--text2); }
+.btn-logout {
+  width: 100%; margin-top: 8px; padding: 9px;
+  background: transparent; border: none;
+  font-family: var(--font); font-size: 0.78rem; font-weight: 600;
+  color: var(--text2); cursor: pointer; border-radius: 10px;
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: var(--coral-bg); color: var(--coral); }
+
+/* ── MAIN AREA ── */
+.main-area {
+  margin-left: var(--sidebar-w);
+  flex: 1; padding: 28px 32px;
+  min-width: 0;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+.page-title {
+  font-size: 1.4rem; font-weight: 800;
+  color: var(--text); letter-spacing: -0.03em;
+  margin-bottom: 2px;
+}
+.page-sub { font-size: 0.82rem; color: var(--text2); }
+
+/* ── STATS ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 20px 22px; box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, transform 0.2s;
+  animation: fadeUp 0.4s ease both;
+}
+.stat-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+.stat-card.accent { background: var(--indigo); box-shadow: 0 8px 24px rgba(91,108,249,0.3); }
+.stat-card.accent .stat-label { color: rgba(255,255,255,0.65); }
+.stat-card.accent .stat-val { color: white; }
+.stat-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; margin-bottom: 14px;
+}
+.stat-icon.blue  { background: var(--indigo-bg); }
+.stat-icon.green { background: var(--green-bg); }
+.stat-icon.amber { background: #FFFBEB; }
+.stat-icon.white { background: rgba(255,255,255,0.2); }
+.stat-label { font-size: 0.68rem; font-weight: 700; color: var(--text2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+.stat-val { font-size: 1.65rem; font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1; }
+
+/* ── PANEL ── */
+.panel {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+  animation: fadeUp 0.4s 0.2s ease both;
+}
+.panel-header {
+  padding: 18px 22px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+  border-bottom: 1px solid rgba(91,108,249,0.06);
+}
+.panel-title { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+.panel-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.search-wrap { position: relative; }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 0.78rem; color: var(--text3); pointer-events: none; }
+.search-input {
+  background: var(--bg); border: none;
+  border-radius: 10px; padding: 8px 12px 8px 30px;
+  font-family: var(--font); font-size: 0.8rem; color: var(--text);
+  outline: none; width: 200px; transition: all 0.2s;
+  box-shadow: inset 0 1px 3px rgba(91,108,249,0.05);
+}
+.search-input:focus { background: white; box-shadow: 0 0 0 3px rgba(91,108,249,0.12); }
+
+.filter-select {
+  background: var(--bg); border: none;
+  border-radius: 10px; padding: 8px 28px 8px 12px;
+  font-family: var(--font); font-size: 0.8rem; color: var(--text2);
+  outline: none; cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 9px center;
+  box-shadow: inset 0 1px 3px rgba(91,108,249,0.05);
+  transition: box-shadow 0.2s;
+}
+.filter-select:focus { background-color: white; box-shadow: 0 0 0 3px rgba(91,108,249,0.12); }
+.filter-select option { background: white; }
+
+.btn-del-sel {
+  display: none; font-size: 0.78rem; font-weight: 700;
+  padding: 8px 14px; background: var(--coral-bg); border: none;
+  color: var(--coral); border-radius: 10px; cursor: pointer;
+  font-family: var(--font); transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(248,113,113,0.15);
+}
+.btn-del-sel:hover { background: #FEE2E2; box-shadow: 0 4px 14px rgba(248,113,113,0.25); }
+
+.btn-refresh {
+  font-size: 0.78rem; font-weight: 600; padding: 8px 14px;
+  background: var(--bg); border: none; color: var(--text2);
+  border-radius: 10px; cursor: pointer; font-family: var(--font);
+  transition: all 0.2s;
+}
+.btn-refresh:hover { background: var(--indigo-bg); color: var(--indigo); box-shadow: 0 2px 8px rgba(91,108,249,0.12); }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { border-bottom: 1px solid rgba(91,108,249,0.08); }
+th {
+  padding: 11px 16px; text-align: left;
+  font-size: 0.68rem; font-weight: 700; color: var(--text2);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  white-space: nowrap; background: #FAFAFD;
+}
+th.th-check, td.td-check { width: 44px; text-align: center; }
+th.th-act, td.td-act { width: 80px; text-align: center; }
+th.sortable { cursor: pointer; user-select: none; transition: color 0.15s; }
+th.sortable:hover { color: var(--indigo); }
+th.sort-asc, th.sort-desc { color: var(--indigo); }
+.sort-icon { display: inline-block; margin-left: 3px; font-size: 0.58rem; opacity: 0.35; }
+th.sort-asc .sort-icon, th.sort-desc .sort-icon { opacity: 1; }
+
+tbody tr { border-bottom: 1px solid rgba(91,108,249,0.05); transition: background 0.12s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #FAFAFD; }
+tbody tr.selected { background: #F0F2FF; }
+td { padding: 13px 16px; font-size: 0.83rem; color: var(--text); }
+td.td-name  { font-weight: 700; }
+td.td-score { font-weight: 800; color: var(--indigo); font-size: 0.9rem; }
+td.td-meta  { color: var(--text2); font-size: 0.8rem; }
+td.td-date  { color: var(--text3); font-size: 0.75rem; }
+
+.rank-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 8px;
+  font-size: 0.7rem; font-weight: 800;
+  background: var(--bg); color: var(--text2);
+}
+.rank-badge.gold   { background: #FEF3C7; color: #D97706; }
+.rank-badge.silver { background: #F3F4F6; color: #6B7280; }
+.rank-badge.bronze { background: #FEF0E7; color: #C2693A; }
+input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--indigo); cursor: pointer; }
+
+.btn-del-row {
+  font-size: 0.72rem; font-weight: 600; padding: 5px 12px;
+  background: var(--bg); border: none; color: var(--text3);
+  border-radius: 8px; cursor: pointer; font-family: var(--font); transition: all 0.15s;
+}
+.btn-del-row:hover { background: var(--coral-bg); color: var(--coral); box-shadow: 0 2px 8px rgba(248,113,113,0.15); }
+
+.table-empty { padding: 56px; text-align: center; font-size: 0.83rem; color: var(--text3); }
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(91,108,249,0.15); border-top-color: var(--indigo);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── PAGINATION ── */
+.pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-top: 1px solid rgba(91,108,249,0.06);
+  flex-wrap: wrap; gap: 8px;
+}
+.pg-info { font-size: 0.75rem; color: var(--text2); }
+.pg-btns { display: flex; gap: 4px; }
+.pg-btn {
+  font-family: var(--font); font-size: 0.75rem; font-weight: 600;
+  padding: 6px 11px; background: var(--bg); border: none;
+  color: var(--text2); border-radius: 8px; cursor: pointer; transition: all 0.15s;
+}
+.pg-btn:hover:not(:disabled) { background: var(--indigo-bg); color: var(--indigo); }
+.pg-btn.active { background: var(--indigo); color: white; box-shadow: 0 3px 10px rgba(91,108,249,0.3); }
+.pg-btn:disabled { opacity: 0.35; cursor: default; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(26,31,54,0.35);
+  backdrop-filter: blur(8px); z-index: 200;
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-card {
+  background: white; border-radius: 22px; padding: 32px 28px; width: 380px;
+  box-shadow: var(--shadow-xl); animation: fadeUp 0.25s ease both;
+}
+.modal-icon {
+  width: 44px; height: 44px; background: var(--coral-bg); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(248,113,113,0.15);
+}
+.modal-title { font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.02em; }
+.modal-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.6; margin-bottom: 22px; }
+.modal-desc strong { color: var(--text); font-weight: 700; }
+.modal-div { height: 1px; background: rgba(91,108,249,0.08); margin-bottom: 18px; }
+.modal-pw-label { font-size: 0.7rem; font-weight: 700; color: var(--text2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+.modal-pw-input {
+  width: 100%; background: var(--bg); border: none;
+  border-radius: 10px; padding: 11px 14px; font-family: var(--font);
+  font-size: 0.88rem; color: var(--text); outline: none; margin-bottom: 6px; transition: all 0.2s;
+  box-shadow: inset 0 1px 3px rgba(91,108,249,0.06);
+}
+.modal-pw-input:focus { background: white; box-shadow: 0 0 0 3px rgba(248,113,113,0.12); }
+.modal-pw-err { font-size: 0.72rem; color: var(--coral); font-weight: 600; margin-bottom: 16px; display: none; min-height: 18px; }
+.modal-btns { display: flex; gap: 8px; margin-top: 4px; }
+.btn-cancel {
+  flex: 1; padding: 11px; background: var(--bg); border: none;
+  color: var(--text2); border-radius: 10px; font-family: var(--font);
+  font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn-cancel:hover { background: #F3F4F6; color: var(--text); }
+.btn-confirm-del {
+  flex: 1; padding: 11px; background: var(--coral); border: none; color: white;
+  border-radius: 10px; font-family: var(--font); font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(248,113,113,0.3);
+}
+.btn-confirm-del:hover { background: #EF4444; box-shadow: 0 6px 20px rgba(248,113,113,0.4); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--text); color: white; border-radius: 12px;
+  padding: 12px 18px; font-size: 0.8rem; font-weight: 600;
+  z-index: 300; transform: translateY(60px) scale(0.95); opacity: 0;
+  transition: all 0.3s cubic-bezier(.34,1.56,.64,1); pointer-events: none;
+  box-shadow: 0 8px 28px rgba(26,31,54,0.2);
+}
+.toast.show { transform: translateY(0) scale(1); opacity: 1; }
+.toast.err { background: var(--coral); }
+.toast.ok  { background: #059669; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main-area { margin-left: 0; padding: 20px 16px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .search-input { width: 140px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-eyebrow">
+      <div class="login-dot">A</div>
+      <div class="login-brand">Astronimation Studio</div>
+    </div>
+    <div class="login-card">
+      <div class="field-label">Password</div>
+      <input class="field-input" id="loginPw" type="password" placeholder="Masukkan password..."
+        onkeydown="if(event.key==='Enter')doLogin()" autocomplete="off" />
+      <button class="btn-primary" onclick="doLogin()">Masuk ke Dashboard</button>
+      <div class="login-err" id="loginErr">Password salah. Silakan coba lagi.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="mainScreen">
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-dot">A</div>
+        <div class="sidebar-name">Astronimation<br>Studio</div>
+      </div>
+
+      <div class="sidebar-section">Game</div>
+
+      <div class="sidebar-item active" id="nav-tebakkata" onclick="selectGame('tebakkata', this)">
+        <span class="item-emoji">🔤</span>
+        Tebak Kata
+        <span class="item-badge">AKTIF</span>
+      </div>
+      <div class="sidebar-item soon" onclick="showToast('Game belum tersedia.')">
+        <span class="item-emoji">🧩</span>
+        Quiz Pilihan
+        <span class="item-badge" style="background:var(--bg);color:var(--text3);">SOON</span>
+      </div>
+      <div class="sidebar-item soon" onclick="showToast('Game belum tersedia.')">
+        <span class="item-emoji">🔢</span>
+        Hitung Cepat
+        <span class="item-badge" style="background:var(--bg);color:var(--text3);">SOON</span>
+      </div>
+      <div class="sidebar-item soon" onclick="showToast('Game belum tersedia.')">
+        <span class="item-emoji">🎯</span>
+        Flash Cards
+        <span class="item-badge" style="background:var(--bg);color:var(--text3);">SOON</span>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">A</div>
+          <div>
+            <div class="sidebar-uname">Admin</div>
+            <div class="sidebar-urole">Astronimation</div>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">↩ Keluar</button>
+      </div>
+    </aside>
+
+    <!-- Main Area -->
+    <div class="main-area">
+      <div class="page-header">
+        <div class="page-title">Tebak Kata</div>
+        <div class="page-sub">Data skor pemain dari semua perangkat</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card accent">
+          <div class="stat-icon white">🏆</div>
+          <div class="stat-label">Total Entri</div>
+          <div class="stat-val" id="statTotal">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">⚡</div>
+          <div class="stat-label">Skor Tertinggi</div>
+          <div class="stat-val" id="statTop">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">📊</div>
+          <div class="stat-label">Rata-rata Skor</div>
+          <div class="stat-val" id="statAvg">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">☑️</div>
+          <div class="stat-label">Dipilih</div>
+          <div class="stat-val" id="statSelected">0</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Data Skor Pemain</div>
+          <div class="panel-tools">
+            <div class="search-wrap">
+              <span class="search-icon">🔍</span>
+              <input class="search-input" id="searchInput" placeholder="Cari nama..." oninput="applyFilters()" />
+            </div>
+            <select class="filter-select" id="filterMapel" onchange="applyFilters()">
+              <option value="">Semua Mapel</option>
+              <option>📜 Sejarah</option><option>💰 Ekonomi</option>
+              <option>🌍 Geografi</option><option>👥 Sosiologi</option>
+              <option>⚛️ Fisika</option><option>🧪 Kimia</option><option>🧬 Biologi</option>
+            </select>
+            <select class="filter-select" id="filterKelas" onchange="applyFilters()">
+              <option value="">Semua Kelas</option>
+              <option>Kelas X</option><option>Kelas XI</option><option>Kelas XII</option>
+            </select>
+            <button class="btn-del-sel" id="btnDeleteSelected" onclick="promptDeleteSelected()">
+              🗑 Hapus (<span id="selectedCount">0</span>)
+            </button>
+            <button class="btn-refresh" onclick="loadData()">↺ Refresh</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="th-check"><input type="checkbox" id="checkAll" onchange="toggleAll(this)" /></th>
+                <th onclick="sortBy('_idx')" class="sortable" id="th-idx"># <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('name')" class="sortable" id="th-name">Nama <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('kelas')" class="sortable" id="th-kelas">Kelas <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('mapel')" class="sortable" id="th-mapel">Mata Pelajaran <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('score')" class="sortable" id="th-score">Skor <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('date')" class="sortable" id="th-date">Tanggal <span class="sort-icon">↕</span></th>
+                <th class="th-act">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="8" class="table-empty">Pilih game untuk memuat data.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <div class="pg-info" id="pgInfo">—</div>
+          <div class="pg-btns" id="pgBtns"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-card">
+    <div class="modal-icon">🗑</div>
+    <div class="modal-title">Hapus Data</div>
+    <div class="modal-desc" id="deleteModalDesc"></div>
+    <div class="modal-div"></div>
+    <div class="modal-pw-label">Konfirmasi Password</div>
+    <input class="modal-pw-input" id="deletePw" type="password" placeholder="Masukkan password..."
+      onkeydown="if(event.key==='Enter')confirmDelete()" autocomplete="off" />
+    <div class="modal-pw-err" id="deletePwErr">Password salah. Coba lagi.</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Batal</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">Hapus Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEETS_URL   = 'https://script.google.com/macros/s/AKfycbylHunsXPXN0zj0JWSWlrOSF0j72OLcblYz0PFUrZS4wTzH8XhqUur2LWuD3cYxQEMo3w/exec';
+const DASHBOARD_PW = 'elsaurus';
+const PER_PAGE     = 20;
+
+let allData = [], filtered = [], selectedRows = new Set();
+let currentPage = 1, pendingDelete = null;
+let sortCol = 'score', sortDir = 'desc';
+
+function doLogin() {
+  if (document.getElementById('loginPw').value === DASHBOARD_PW) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display  = 'block';
+    loadData();
+  } else {
+    const err = document.getElementById('loginErr');
+    err.style.display = 'block';
+    document.getElementById('loginPw').value = '';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+function doLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('mainScreen').style.display  = 'none';
+  document.getElementById('loginPw').value = '';
+  allData = []; filtered = []; selectedRows.clear(); updateSelectionUI();
+}
+
+function selectGame(game, el) {
+  document.querySelectorAll('.sidebar-item').forEach(t => {
+    if (!t.classList.contains('soon')) t.classList.remove('active');
+  });
+  el.classList.add('active');
+  if (game === 'tebakkata') {
+    document.querySelector('.page-title').textContent = 'Tebak Kata';
+    document.querySelector('.page-sub').textContent   = 'Data skor pemain dari semua perangkat';
+    loadData();
+  }
+}
+
+async function loadData() {
+  setLoading(); selectedRows.clear(); updateSelectionUI();
+  try {
+    const res  = await fetch(SHEETS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('invalid');
+    allData = data; applyFilters(); updateStats();
+    showToast('✓ ' + data.length + ' entri dimuat', 'ok');
+  } catch {
+    document.getElementById('tableBody').innerHTML =
+      '<tr><td colspan="8" class="table-empty">⚠ Gagal memuat data. Periksa koneksi.</td></tr>';
+    showToast('Gagal memuat data.', 'err');
+  }
+}
+
+function setLoading() {
+  document.getElementById('tableBody').innerHTML =
+    '<tr><td colspan="8" class="table-empty"><span class="spinner"></span> Memuat data...</td></tr>';
+  document.getElementById('pgInfo').textContent = '—';
+  document.getElementById('pgBtns').innerHTML   = '';
+  ['statTotal','statTop','statAvg'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const mapel = document.getElementById('filterMapel').value;
+  const kelas = document.getElementById('filterKelas').value;
+  filtered = allData.filter(r =>
+    (!q     || (r.name||'').toLowerCase().includes(q)) &&
+    (!mapel || (r.mapel||'') === mapel) &&
+    (!kelas || (r.kelas||'') === kelas)
+  );
+  filtered.sort((a, b) => {
+    let va = sortCol === '_idx' ? allData.indexOf(a) : (a[sortCol] ?? '');
+    let vb = sortCol === '_idx' ? allData.indexOf(b) : (b[sortCol] ?? '');
+    if (sortCol === 'score') { va = Number(va)||0; vb = Number(vb)||0; }
+    else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+  currentPage = 1; renderTable(); updateStats(); updateSortIcons();
+}
+
+function sortBy(col) {
+  sortCol === col ? sortDir = sortDir === 'asc' ? 'desc' : 'asc'
+                  : (sortCol = col, sortDir = col === 'score' ? 'desc' : 'asc');
+  applyFilters();
+}
+
+function updateSortIcons() {
+  ['_idx','name','kelas','mapel','score','date'].forEach((col, i) => {
+    const th = document.getElementById(['th-idx','th-name','th-kelas','th-mapel','th-score','th-date'][i]);
+    if (!th) return;
+    th.classList.remove('sort-asc','sort-desc');
+    const icon = th.querySelector('.sort-icon');
+    if (col === sortCol) {
+      th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+      if (icon) icon.textContent = sortDir === 'asc' ? '↑' : '↓';
+    } else { if (icon) icon.textContent = '↕'; }
+  });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="table-empty">Tidak ada data yang cocok.</td></tr>';
+    document.getElementById('pgInfo').textContent = '0 entri';
+    document.getElementById('pgBtns').innerHTML   = ''; return;
+  }
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+  const start      = (currentPage - 1) * PER_PAGE;
+  const pageData   = filtered.slice(start, start + PER_PAGE);
+  tbody.innerHTML = pageData.map((row, pi) => {
+    const gIdx = allData.indexOf(row);
+    const disp = start + pi + 1;
+    const rc   = disp===1?'gold':disp===2?'silver':disp===3?'bronze':'';
+    return `<tr class="${selectedRows.has(gIdx)?'selected':''}" id="row-${gIdx}">
+      <td class="td-check"><input type="checkbox" onchange="toggleRow(${gIdx},this)" ${selectedRows.has(gIdx)?'checked':''}></td>
+      <td><span class="rank-badge ${rc}">${disp}</span></td>
+      <td class="td-name">${esc(row.name||'—')}</td>
+      <td class="td-meta">${esc(row.kelas||'—')}</td>
+      <td class="td-meta">${esc(row.mapel||'—')}</td>
+      <td class="td-score">${(row.score||0).toLocaleString('id')}</td>
+      <td class="td-date">${row.date ? fmtDate(row.date) : '—'}</td>
+      <td class="td-act"><button class="btn-del-row" onclick="promptDeleteSingle(${gIdx})">Hapus</button></td>
+    </tr>`;
+  }).join('');
+  const pageIdxs = pageData.map(r => allData.indexOf(r));
+  document.getElementById('checkAll').checked = pageIdxs.length > 0 && pageIdxs.every(i => selectedRows.has(i));
+  document.getElementById('pgInfo').textContent =
+    `Menampilkan ${start+1}–${Math.min(start+PER_PAGE, filtered.length)} dari ${filtered.length} entri`;
+  const pgBtns = document.getElementById('pgBtns');
+  pgBtns.innerHTML = '';
+  const addBtn = (lbl, pg, active, dis) => {
+    const b = document.createElement('button');
+    b.className = 'pg-btn' + (active?' active':''); b.textContent = lbl; b.disabled = dis;
+    b.onclick = () => { currentPage = pg; renderTable(); }; pgBtns.appendChild(b);
+  };
+  addBtn('‹', currentPage-1, false, currentPage===1);
+  pageRange(currentPage, totalPages).forEach(p => {
+    if (p==='…') { const s=document.createElement('span'); s.textContent='…'; s.style.cssText='padding:5px 6px;color:var(--text3);font-size:0.75rem;'; pgBtns.appendChild(s); }
+    else addBtn(p, p, p===currentPage, false);
+  });
+  addBtn('›', currentPage+1, false, currentPage===totalPages);
+}
+
+function pageRange(cur, tot) {
+  if (tot<=7) return Array.from({length:tot},(_,i)=>i+1);
+  if (cur<=4) return [1,2,3,4,5,'…',tot];
+  if (cur>=tot-3) return [1,'…',tot-4,tot-3,tot-2,tot-1,tot];
+  return [1,'…',cur-1,cur,cur+1,'…',tot];
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allData.length || '0';
+  if (!allData.length) { ['statTop','statAvg'].forEach(id=>document.getElementById(id).textContent='—'); return; }
+  const scores = allData.map(r=>Number(r.score)||0);
+  document.getElementById('statTop').textContent = Math.max(...scores).toLocaleString('id');
+  document.getElementById('statAvg').textContent = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length).toLocaleString('id');
+  document.getElementById('statSelected').textContent = selectedRows.size;
+}
+
+function toggleRow(idx, cb) {
+  cb.checked ? selectedRows.add(idx) : selectedRows.delete(idx);
+  document.getElementById('row-'+idx)?.classList.toggle('selected', cb.checked);
+  updateSelectionUI();
+}
+
+function toggleAll(masterCb) {
+  const start = (currentPage-1)*PER_PAGE;
+  filtered.slice(start, start+PER_PAGE).forEach(row => {
+    const idx = allData.indexOf(row);
+    masterCb.checked ? selectedRows.add(idx) : selectedRows.delete(idx);
+    const tr = document.getElementById('row-'+idx);
+    if (tr) { tr.classList.toggle('selected', masterCb.checked); tr.querySelector('input[type=checkbox]').checked = masterCb.checked; }
+  });
+  updateSelectionUI();
+}
+
+function updateSelectionUI() {
+  const n = selectedRows.size;
+  document.getElementById('btnDeleteSelected').style.display = n>0?'inline-flex':'none';
+  document.getElementById('selectedCount').textContent = n;
+  document.getElementById('statSelected').textContent  = n;
+}
+
+function promptDeleteSingle(idx) {
+  const r = allData[idx];
+  pendingDelete = { indices: [idx] };
+  document.getElementById('deleteModalDesc').innerHTML =
+    `Kamu akan menghapus skor <strong>${esc(r.name||'?')}</strong> secara permanen.<br><span style="font-size:0.78rem;color:var(--text3);margin-top:4px;display:block;">${esc(r.kelas||'')} · ${esc(r.mapel||'')} · ${(r.score||0).toLocaleString('id')} poin</span>`;
+  openDeleteModal();
+}
+
+function promptDeleteSelected() {
+  if (!selectedRows.size) return;
+  pendingDelete = { indices: [...selectedRows] };
+  document.getElementById('deleteModalDesc').innerHTML =
+    `Kamu akan menghapus <strong>${selectedRows.size} entri</strong> secara permanen.<br><span style="font-size:0.78rem;color:var(--text3);margin-top:4px;display:block;">Tindakan ini tidak dapat dibatalkan.</span>`;
+  openDeleteModal();
+}
+
+function openDeleteModal() {
+  document.getElementById('deletePw').value = '';
+  document.getElementById('deletePwErr').style.display = 'none';
+  document.getElementById('deleteModal').classList.add('show');
+  setTimeout(() => document.getElementById('deletePw').focus(), 100);
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('show');
+  pendingDelete = null;
+}
+
+async function confirmDelete() {
+  if (document.getElementById('deletePw').value !== DASHBOARD_PW) {
+    document.getElementById('deletePwErr').style.display = 'block';
+    document.getElementById('deletePw').value = '';
+    setTimeout(() => document.getElementById('deletePwErr').style.display='none', 2500);
+    return;
+  }
+  const rows = pendingDelete.indices.map(i => allData[i]).filter(Boolean);
+  closeDeleteModal();
+  showToast('Menghapus ' + rows.length + ' entri...');
+  try {
+    await fetch(SHEETS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', rows })
+    });
+    showToast('✓ ' + rows.length + ' entri dihapus.', 'ok');
+    selectedRows.clear();
+    setTimeout(loadData, 1500);
+  } catch {
+    showToast('Gagal menghapus. Coba lagi.', 'err');
+  }
+}
+
+function fmtDate(raw) {
+  try { const d=new Date(raw); return isNaN(d)?raw:d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}); } catch { return raw; }
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (type?' '+type:'');
+  void t.offsetWidth; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+document.getElementById('deleteModal').addEventListener('click', e => {
+  if (e.target.id==='deleteModal') closeDeleteModal();
+});
+setTimeout(()=>document.getElementById('loginPw').focus(), 100);
+</script>
+</body>
+</html>
