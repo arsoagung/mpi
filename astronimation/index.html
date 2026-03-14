@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astronimation Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple:     #1A73E8;
+      --purple-lt:  #6aa3f0;
+      --purple-bg:  #e8f0fd;
+      --purple-bg2: #d2e3fc;
+      --pink:       #fd79a8;
+      --teal:       #00cec9;
+      --yellow:     #fdcb6e;
+      --green:      #55efc4;
+      --bg:         #f6f9ff;
+      --white:      #ffffff;
+      --text:       #1a1f36;
+      --text-sub:   #4a5568;
+      --text-muted: #8da2c0;
+      --border:     #e1eaf8;
+      --shadow:     0 2px 16px rgba(26,115,232,0.10);
+      --shadow-md:  0 6px 28px rgba(26,115,232,0.16);
+      --shadow-lg:  0 12px 40px rgba(26,115,232,0.20);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── WRAPPER ── */
+    .wrapper {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 28px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon-wrap {
+      width: 42px;
+      height: 42px;
+      background: var(--purple);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(26,115,232,0.38);
+    }
+
+    .logo-icon-wrap svg { width: 26px; height: 26px; }
+
+    .logo-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-nav {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.16s, color 0.16s, border-color 0.16s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .btn-nav-ghost {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-sub);
+    }
+    .btn-nav-ghost:hover {
+      background: var(--purple-bg);
+      border-color: var(--purple-lt);
+      color: var(--purple);
+    }
+
+    @media (max-width: 520px) {
+      .btn-nav span.label { display: none; }
+    }
+    .hero {
+      text-align: center;
+      padding: 20px 0;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--purple-bg);
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--purple);
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .hero-badge .dot {
+      width: 7px; height: 7px;
+      background: var(--purple);
+      border-radius: 50%;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    .hero h2 {
+      font-size: clamp(2rem, 5.5vw, 3.3rem);
+      font-weight: 600;
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .hero h2 .grad {
+      background: linear-gradient(90deg, var(--purple) 0%, var(--pink) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      max-width: 680px;
+      margin: 0 auto;
+      font-size: 0.92rem;
+      color: var(--text-sub);
+      line-height: 1.75;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 0 36px;
+    }
+
+    /* ── GAME GRID ── */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 60px;
+    }
+
+    @media (max-width: 680px) {
+      .game-grid { grid-template-columns: repeat(2, 1fr); gap: 13px; }
+    }
+    @media (max-width: 400px) {
+      .game-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── GAME CARD ── */
+    .game-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .game-card:nth-child(1) { animation-delay: 0.07s; }
+    .game-card:nth-child(2) { animation-delay: 0.13s; }
+    .game-card:nth-child(3) { animation-delay: 0.19s; }
+    .game-card:nth-child(4) { animation-delay: 0.25s; }
+    .game-card:nth-child(5) { animation-delay: 0.31s; }
+    .game-card:nth-child(6) { animation-delay: 0.37s; }
+    .game-card:nth-child(7) { animation-delay: 0.43s; }
+    .game-card:nth-child(8) { animation-delay: 0.49s; }
+    .game-card:nth-child(9) { animation-delay: 0.55s; }
+
+    .game-card.active:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--purple-lt);
+    }
+
+    .game-card:not(.active) {
+      border-color: transparent;
+      box-shadow: 0 0 0 1.5px rgba(26,115,232,0.12);
+    }
+    /* Cover hover overlay kiri ke kanan — REMOVED */
+    .card-cover {
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cover-art {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Empty covers */
+    .card-cover.empty .cover-art {
+      background: var(--bg);
+      background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(26,115,232,0.03) 0px,
+        rgba(26,115,232,0.03) 1px,
+        transparent 1px,
+        transparent 16px
+      );
+    }
+
+    .cover-coming-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.35;
+    }
+
+    .cover-coming-label svg { width: 28px; height: 28px; }
+
+    .cover-coming-label span {
+      font-size: 0.57rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--purple);
+    }
+
+    /* ── CARD BODY ── */
+    .card-body { padding: 14px 15px 16px; }
+
+    .card-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 5px;
+      letter-spacing: -0.01em;
+    }
+
+    .game-card:not(.active) .card-title { color: var(--text-muted); }
+
+    .card-desc {
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      line-height: 1.6;
+      margin-bottom: 13px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── BUTTONS ── */
+    .card-actions {
+      display: grid;
+      grid-template-columns: 7fr 3fr;
+      gap: 7px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 9px 10px;
+      cursor: pointer;
+      transition: opacity 0.16s, transform 0.14s, box-shadow 0.16s;
+      white-space: nowrap;
+    }
+
+    .btn-play {
+      background: var(--purple);
+      color: white;
+      box-shadow: 0 4px 14px rgba(26,115,232,0.32);
+    }
+    .btn-play:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+      box-shadow: 0 6px 20px rgba(26,115,232,0.45);
+    }
+
+    .btn-nav-contact {
+      background: var(--purple);
+      border: 1.5px solid var(--purple);
+      color: white;
+      box-shadow: 0 3px 10px rgba(26,115,232,0.28);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .btn-nav-contact .roll-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 1.1em;
+      overflow: hidden;
+      transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    }
+    .btn-nav-contact .roll-wrap span {
+      display: block;
+      line-height: 1.1em;
+      white-space: nowrap;
+    }
+    .btn-nav-contact:hover .roll-wrap {
+      transform: translateY(-1.1em);
+    }
+    .btn-nav-contact:hover {
+      box-shadow: 0 5px 18px rgba(26,115,232,0.4);
+    }
+
+    .btn-download {
+      background: var(--purple-bg);
+      color: var(--purple);
+      border: 1.5px solid var(--purple-bg2);
+      font-size: 0.66rem;
+      overflow: hidden;
+      position: relative;
+      transition: color 0.35s ease, border-color 0.35s ease;
+    }
+    .btn-download::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #EB76A7;
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      z-index: 0;
+    }
+    .btn-download:hover::before { transform: translateX(0); }
+    .btn-download:hover { color: white; border-color: #EB76A7; }
+    .btn-download span { position: relative; z-index: 1; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(30,20,60,0.32);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: white;
+      border-radius: 24px;
+      max-width: 520px;
+      width: 100%;
+      padding: 30px 28px 26px;
+      box-shadow: 0 24px 64px rgba(26,115,232,0.2);
+      transform: translateY(18px) scale(0.97);
+      transition: transform 0.22s ease;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+    .modal-icon {
+      width: 48px; height: 48px;
+      background: var(--purple-bg);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+    }
+    .modal h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .modal > p {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .modal-notice {
+      background: #fff8ee;
+      border-left: 3px solid #fdcb6e;
+      border-radius: 0 10px 10px 0;
+      padding: 11px 13px;
+      font-size: 0.74rem;
+      color: #7a5c00;
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+    .modal-share-box {
+      background: var(--purple-bg);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+    .modal-share-box p {
+      font-size: 0.72rem;
+      color: var(--purple);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .share-text {
+      font-size: 0.73rem;
+      color: var(--text);
+      background: white;
+      border: 1.5px solid var(--purple-bg2);
+      border-radius: 9px;
+      padding: 10px 12px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      cursor: text;
+      user-select: all;
+    }
+    .btn-copy {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1.5px solid #EB76A7;
+      background: white;
+      color: #EB76A7;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-copy:hover, .btn-copy.copied { background: #EB76A7; color: white; }
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+    .btn-modal-cancel {
+      padding: 11px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--text-sub);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.14s;
+    }
+    .btn-modal-cancel:hover { background: var(--bg); }
+    .btn-modal-download {
+      padding: 11px;
+      border-radius: 12px;
+      border: none;
+      background: var(--purple);
+      color: white;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(26,115,232,0.32);
+      transition: opacity 0.15s, transform 0.14s;
+    }
+    .btn-modal-download:hover { opacity: 0.9; transform: scale(1.02); }
+
+    .btn-disabled {
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 1.5px solid var(--border);
+      cursor: default;
+      grid-column: 1 / -1;
+    }
+    .btn-disabled:hover { opacity: 1; transform: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 18px 0 40px;
+      border-top: 1.5px solid var(--border);
+    }
+
+    footer p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.3); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-icon-wrap">
+        <svg viewBox="0 0 26 26" fill="none">
+          <circle cx="13" cy="13" r="11" stroke="white" stroke-width="1.2" stroke-opacity="0.5"/>
+          <ellipse cx="13" cy="13" rx="8" ry="4.5" stroke="white" stroke-width="1" transform="rotate(-15 13 13)" stroke-opacity="0.7"/>
+          <circle cx="13" cy="13" r="3" fill="white"/>
+          <circle cx="20" cy="7" r="1.2" fill="white" fill-opacity="0.6"/>
+        </svg>
+      </div>
+      <span class="logo-name">Astronimation Studio</span>
+    </div>
+    <nav class="header-nav">
+      <button class="btn-nav btn-nav-contact" onclick="openGuideModal()"><div class="roll-wrap"><span>📖 Cara Kelola Soal</span><span>📖 Cara Kelola Soal</span></div></button>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Koleksi Media Pembelajaran Interaktif
+    </div>
+    <h2>
+      Belajar jadi lebih seru<br>
+      <span class="grad">dengan Media Pembelajaran Interaktif</span>
+    </h2>
+    <p class="hero-desc">
+      Kumpulan media pembelajaran interaktif berbasis game untuk siswa SMA — menghadirkan pengalaman belajar yang aktif dan menarik.
+    </p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- GAME GRID -->
+  <section>
+    <div class="game-grid">
+
+      <!-- CARD 1 — Tebak Kata (ACTIVE) -->
+      <div class="game-card active">
+        <div class="card-cover">
+          <div class="cover-art" style="background: linear-gradient(135deg, #ede9ff 0%, #d6ccff 100%);">
+            <!-- Deco blobs -->
+            <div style="position:absolute;inset:0;overflow:hidden;">
+              <div style="position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(26,115,232,0.12);top:-25px;right:-15px;"></div>
+              <div style="position:absolute;width:55px;height:55px;border-radius:50%;background:rgba(253,121,168,0.15);bottom:-10px;left:-10px;"></div>
+            </div>
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" style="position:relative;z-index:1;">
+              <rect x="6" y="18" width="60" height="38" rx="10" fill="white" fill-opacity="0.7" stroke="rgba(26,115,232,0.25)" stroke-width="1.5"/>
+              <rect x="13" y="28" width="14" height="14" rx="5" fill="var(--purple)" fill-opacity="0.15" stroke="var(--purple)" stroke-width="1.2" stroke-opacity="0.5"/>
+              <rect x="29" y="28" width="14" height="14" rx="5" fill="#fd79a8" fill-opacity="0.15" stroke="#fd79a8" stroke-width="1.2" stroke-opacity="0.5"/>
+              <rect x="45" y="28" width="14" height="14" rx="5" fill="#fdcb6e" fill-opacity="0.15" stroke="#fdcb6e" stroke-width="1.2" stroke-opacity="0.5"/>
+              <text x="20" y="40" font-family="monospace" font-size="9" fill="#1A73E8" text-anchor="middle" font-weight="bold">T</text>
+              <text x="36" y="40" font-family="monospace" font-size="9" fill="#fd79a8" text-anchor="middle" font-weight="bold">E</text>
+              <text x="52" y="40" font-family="monospace" font-size="9" fill="#e67e22" text-anchor="middle" font-weight="bold">B</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Tebak Kata</div>
+          <div class="card-desc">Game tebak kata dengan clue bergambar. Cocok untuk review kosamat dan konsep berbagai mata pelajaran.</div>
+          <div class="card-actions">
+            <button class="btn btn-play" onclick="window.open('https://arsoagung.github.io/mpi/tebak-kata/','_blank')">▶ Mainkan</button>
+            <button class="btn btn-download" title="Unduh MPI Offline" onclick="openDownloadModal()"><span>⬇ Unduh</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARDS 2–9 — Segera Hadir -->
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="card-cover empty">
+          <div class="cover-art">
+            <div class="cover-coming-label">
+              <svg viewBox="0 0 28 28" fill="none"><rect x="2.5" y="2.5" width="23" height="23" rx="5" stroke="#1A73E8" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="14" cy="14" r="3.5" stroke="#1A73E8" stroke-width="1.4"/></svg>
+              <span>Segera Hadir</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Segera Hadir</div>
+          <div class="card-desc">Game baru sedang dalam pengembangan. Pantau terus pembaruan dari kami!</div>
+          <div class="card-actions">
+            <button class="btn btn-disabled" disabled>⏳ Belum Tersedia</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>✦ Astronimation Studio · Media Pembelajaran Interaktif · Tingkat SMA</p>
+  </footer>
+
+</div>
+
+<!-- GUIDE MODAL -->
+<div class="modal-overlay" id="guideModal" onclick="if(event.target===this)closeGuideModal()">
+  <div class="modal">
+    <div class="modal-icon">📖</div>
+    <h3>Cara Kelola Soal</h3>
+    <p>Setiap game MPI memiliki panel admin bawaan untuk mengelola soal langsung dari browser — tanpa perlu coding!</p>
+    <div class="modal-notice" style="background:#f0f9ff;border-color:#38bdf8;color:#0c4a6e;">
+      💡 Fitur kelola soal tersedia di dalam game. Kamu bisa menambah, mengedit, dan menghapus soal kapan saja.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:12px;">
+        <div style="width:28px;height:28px;background:var(--purple-bg);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem;">1️⃣</div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;">Buka game lalu klik tombol "Kelola Soal"</div>
+          <div style="font-size:0.72rem;color:var(--text-sub);line-height:1.55;">Biasanya ada di pojok kiri bawah layar game.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:12px;">
+        <div style="width:28px;height:28px;background:var(--purple-bg);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem;">2️⃣</div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;">Masukkan password admin</div>
+          <div style="font-size:0.72rem;color:var(--text-sub);line-height:1.55;">Password default: <code style="background:var(--purple-bg);color:var(--purple);padding:1px 6px;border-radius:4px;font-size:0.7rem;">guruhebat</code></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg);border-radius:12px;">
+        <div style="width:28px;height:28px;background:var(--purple-bg);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem;">3️⃣</div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;">Tambah, edit, atau hapus soal</div>
+          <div style="font-size:0.72rem;color:var(--text-sub);line-height:1.55;">Soal tersimpan otomatis di browser. Gunakan fitur ekspor JSON untuk memindahkan soal ke perangkat lain.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions" style="grid-template-columns:1fr;">
+      <button class="btn-modal-download" onclick="closeGuideModal()">Oke, Mengerti!</button>
+    </div>
+  </div>
+</div>
+
+<!-- DOWNLOAD MODAL -->
+<div class="modal-overlay" id="downloadModal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-icon">📦</div>
+    <h3>Unduh MPI Offline</h3>
+    <p>Kamu akan mengunduh file <strong>HTML tunggal</strong> yang bisa dijalankan langsung di browser tanpa koneksi internet — cocok untuk digunakan di sekolah mana pun.</p>
+    <div class="modal-notice">
+      ⚠️ Media pembelajaran ini <strong>gratis</strong> dan dirancang untuk semua guru di Indonesia. Mohon <strong>jangan dimodifikasi</strong> atau dijual kembali dalam bentuk apapun.
+    </div>
+    <div class="modal-share-box">
+      <p>✨ Salin & bagikan teks ini ke media sosialmu dulu — tombol unduh akan aktif setelah kamu menyalinnya!</p>
+      <div class="share-text" id="shareText">Halo! Ada koleksi Media Pembelajaran Interaktif (MPI) berbasis game yang gratis untuk semua guru SMA di Indonesia 🎮📚
+
+Cek selengkapnya di: https://s.id/astronimation</div>
+      <button class="btn-copy" id="copyBtn" onclick="copyShareText()">Salin Teks untuk Dibagikan</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeDownloadModal()">Batal</button>
+      <button class="btn-modal-download" id="btnDownload" onclick="startDownload()" disabled style="opacity:0.4;cursor:not-allowed;">⬇ Unduh Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openGuideModal() {
+    document.getElementById('guideModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGuideModal() {
+    document.getElementById('guideModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function openDownloadModal() {
+    document.getElementById('downloadModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDownloadModal() {
+    document.getElementById('downloadModal').classList.remove('open');
+    document.body.style.overflow = '';
+    // Reset download button
+    const dlBtn = document.getElementById('btnDownload');
+    dlBtn.disabled = true;
+    dlBtn.style.opacity = '0.4';
+    dlBtn.style.cursor = 'not-allowed';
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('downloadModal')) closeDownloadModal();
+  }
+
+  function copyShareText() {
+    const text = document.getElementById('shareText').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Teks Berhasil Disalin!';
+      btn.classList.add('copied');
+      // Enable download button
+      const dlBtn = document.getElementById('btnDownload');
+      dlBtn.disabled = false;
+      dlBtn.style.opacity = '1';
+      dlBtn.style.cursor = 'pointer';
+      setTimeout(() => {
+        btn.textContent = 'Salin Teks untuk Dibagikan';
+        btn.classList.remove('copied');
+      }, 2500);
+    });
+  }
+
+  function startDownload() {
+    window.open('https://arsoagung.github.io/mpi/tebak-kata/', '_blank');
+    closeDownloadModal();
+  }
+</script>
+</body>
+</html>
